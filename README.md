@@ -1,3 +1,15 @@
+# IT WORKS!?
+
+EMI Loot (Forge) TODO:
+
+- backport fixes from >1.19
+- fix resource reload listener
+- remove Architectury API dependency??
+  - (use EMI impls for "reference")
+- see what else i broke lol
+
+***
+
 # Emi Loot
 <p align="left">
 <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-brightgreen.svg"></a>

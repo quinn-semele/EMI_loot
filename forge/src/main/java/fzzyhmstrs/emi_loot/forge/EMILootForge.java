@@ -1,6 +1,5 @@
 package fzzyhmstrs.emi_loot.forge;
 
-import dev.architectury.platform.forge.EventBuses;
 import fzzyhmstrs.emi_loot.EMILoot;
 import fzzyhmstrs.emi_loot.forge.events.EMILootClientForgeEvents;
 import fzzyhmstrs.emi_loot.forge.events.EMILootClientModEvents;
@@ -16,7 +15,7 @@ import net.minecraftforge.fml.loading.FMLEnvironment;
 public class EMILootForge {
     public EMILootForge() {
         IEventBus MOD_BUS = FMLJavaModLoadingContext.get().getModEventBus();
-        EventBuses.registerModEventBus(EMILoot.MOD_ID, MOD_BUS);
+        //EventBuses.registerModEventBus(EMILoot.MOD_ID, MOD_BUS);
 
         MinecraftForge.EVENT_BUS.register(new EMILootForgeEvents());
         //MOD_BUS.register(new EMILootModEvents());

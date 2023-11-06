@@ -1,7 +1,7 @@
 package fzzyhmstrs.emi_loot.server;
 
-import dev.architectury.networking.NetworkManager;
 import io.netty.buffer.Unpooled;
+import lol.bai.badpackets.api.PacketSender;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -52,7 +52,7 @@ public class ChestLootTableSender implements LootSender<ChestLootPoolBuilder> {
             buf.writeItemStack(item);
             buf.writeFloat(floatWeight);
         });
-        NetworkManager.sendToPlayer(player, CHEST_SENDER, buf);
+        PacketSender.s2c(player).send(CHEST_SENDER, buf);
     }
 
     @Override

@@ -29,6 +29,6 @@
   "depends": {
     "minecraft": "1.19.x",
     "emi": ">=1.0.0",
-    "architectury": ">=6.5.85"
+    "badpackets": ">=0.2.0"
   }
 }

@@ -34,8 +34,8 @@ ordering="AFTER"
 side="BOTH"
 
 [[dependencies.emi_loot]]
-modId = "architectury"
+modId = "badpackets"
 mandatory = true
-versionRange = "[6.5.85,)"
+versionRange = "[0.2.0,)"
 ordering = "AFTER"
 side = "BOTH"

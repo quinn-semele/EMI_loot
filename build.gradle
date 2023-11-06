@@ -29,6 +29,16 @@ allprojects {
         maven {
             name = "TerraformersMC"
             url = "https://maven.terraformersmc.com/"
+            content {
+                includeGroup "dev.emi"
+            }
+        }
+        maven {
+            name = "badasintended"
+            url = "https://maven2.bai.lol/"
+            content {
+                includeGroup "lol.bai"
+            }
         }
     }
 

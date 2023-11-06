@@ -1,9 +1,9 @@
 package fzzyhmstrs.emi_loot.server;
 
-import dev.architectury.networking.NetworkManager;
 import fzzyhmstrs.emi_loot.EMILoot;
 import fzzyhmstrs.emi_loot.util.TextKey;
 import io.netty.buffer.Unpooled;
+import lol.bai.badpackets.api.PacketSender;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -55,7 +55,7 @@ public class BlockLootTableSender implements LootSender<BlockLootPoolBuilder> {
             if (EMILoot.DEBUG) EMILoot.LOGGER.info("sending simple block: " + idToSend);
             buf.writeShort(-1);
             buf.writeRegistryValue(Registry.ITEM,builderList.get(0).simpleStack.getItem());
-            NetworkManager.sendToPlayer(player,BLOCK_SENDER, buf);
+            PacketSender.s2c(player).send(BLOCK_SENDER, buf);
             return;
         } else if (builderList.isEmpty()){
             return;
@@ -94,7 +94,7 @@ public class BlockLootTableSender implements LootSender<BlockLootPoolBuilder> {
             });
 
         });
-        NetworkManager.sendToPlayer(player,BLOCK_SENDER, buf);
+        PacketSender.s2c(player).send(BLOCK_SENDER, buf);
     }
 
     @Override

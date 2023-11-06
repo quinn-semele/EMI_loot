@@ -1,10 +1,10 @@
 package fzzyhmstrs.emi_loot.util;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import dev.emi.emi.EmiPort;
-import dev.emi.emi.EmiUtil;
+import dev.emi.emi.api.render.EmiTooltipComponents;
 import dev.emi.emi.api.stack.EmiStack;
-import dev.emi.emi.screen.tooltip.RemainderTooltipComponent;
+import fzzyhmstrs.emi_loot.EMILootExpectPlatform;
+import fzzyhmstrs.emi_loot.client.ClientResourceData;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.Mouse;
 import net.minecraft.client.gui.screen.Screen;
@@ -104,11 +104,11 @@ public class EntityEmiStack extends EmiStack {
     public List<TooltipComponent> getTooltip() {
         List<TooltipComponent> list = new ArrayList<>();
         if (entity != null) {
-            list.addAll(getTooltipText().stream().map(EmiPort::ordered).map(TooltipComponent::of).toList());
-            String mod = EmiUtil.getModName(Registry.ENTITY_TYPE.getId(entity.getType()).getNamespace());
-            list.add(TooltipComponent.of(EmiPort.ordered(EmiPort.literal(mod, Formatting.BLUE, Formatting.ITALIC))));
+            list.addAll(getTooltipText().stream().map(Text::asOrderedText).map(TooltipComponent::of).toList());
+            String mod = EMILootExpectPlatform.getModName(Registry.ENTITY_TYPE.getId(entity.getType()).getNamespace());
+            list.add(TooltipComponent.of(Text.literal(mod).formatted(Formatting.BLUE).formatted(Formatting.ITALIC).asOrderedText()));
             if (!getRemainder().isEmpty()) {
-                list.add(new RemainderTooltipComponent(this));
+                list.add(EmiTooltipComponents.getRemainderTooltipComponent(this));
             }
         }
         return list;
@@ -116,7 +116,7 @@ public class EntityEmiStack extends EmiStack {
 
     @Override
     public Text getName() {
-        return entity != null ? entity.getName() : EmiPort.literal("yet another missingno");
+        return entity != null ? entity.getName() : Text.literal("yet another missingno");
     }
 
     public static void renderEntity(int x, int y, EntityRenderContext ctx, LivingEntity entity) {

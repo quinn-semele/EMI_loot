@@ -2,7 +2,6 @@ package fzzyhmstrs.emi_loot;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import dev.architectury.platform.Platform;
 import fzzyhmstrs.emi_loot.parser.LootTableParser;
 import fzzyhmstrs.emi_loot.server.condition.BlownUpByCreeperLootCondition;
 import fzzyhmstrs.emi_loot.server.condition.KilledByWitherLootCondition;
@@ -72,7 +71,7 @@ public class EMILoot {
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     private static EmiLootConfig readOrCreate(){
-        File dir = Platform.getConfigFolder().toFile();
+        File dir = EMILootExpectPlatform.getConfigDir().toFile();
 
         if (!dir.exists() && !dir.mkdirs()) {
             LOGGER.error("EMI Loot could not find or create config directory, using default configs");

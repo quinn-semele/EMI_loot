@@ -1,12 +1,12 @@
 package fzzyhmstrs.emi_loot.emi;
 
-import dev.architectury.platform.Platform;
 import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.api.recipe.EmiRecipeCategory;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.widget.WidgetHolder;
 import fzzyhmstrs.emi_loot.EMILootClient;
+import fzzyhmstrs.emi_loot.EMILootExpectPlatform;
 import fzzyhmstrs.emi_loot.client.ClientBuiltPool;
 import fzzyhmstrs.emi_loot.client.ClientGameplayLootTable;
 import fzzyhmstrs.emi_loot.util.IconGroupEmiWidget;
@@ -40,9 +40,8 @@ public class GameplayLootRecipe implements EmiRecipe {
         String key = "emi_loot.gameplay." + loot.id.toString();
         Text text = LText.translatable(key);
         if (Objects.equals(text.getString(), key)){
-            // ok so maybe this is cheating
-            if (Platform.isModLoaded(loot.id.getNamespace())){
-                name = LText.translatable("emi_loot.gameplay.unknown_gameplay", loot.id.getNamespace());
+            if (EMILootExpectPlatform.isModLoaded(loot.id.getNamespace())){
+                name = LText.translatable("emi_loot.gameplay.unknown_gameplay", EMILootExpectPlatform.getModName(loot.id.getNamespace()));
             } else {
                 Text unknown = LText.translatable("emi_loot.gameplay.unknown");
                 name = LText.translatable("emi_loot.gameplay.unknown_gameplay", unknown.getString());

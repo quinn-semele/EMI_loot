@@ -1,7 +1,6 @@
 package fzzyhmstrs.emi_loot.emi;
 
 import com.google.common.collect.ArrayListMultimap;
-import dev.architectury.platform.Platform;
 import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.api.recipe.EmiRecipeCategory;
 import dev.emi.emi.api.stack.EmiIngredient;
@@ -10,6 +9,7 @@ import dev.emi.emi.api.widget.SlotWidget;
 import dev.emi.emi.api.widget.WidgetHolder;
 import fzzyhmstrs.emi_loot.EMILoot;
 import fzzyhmstrs.emi_loot.EMILootClient;
+import fzzyhmstrs.emi_loot.EMILootExpectPlatform;
 import fzzyhmstrs.emi_loot.client.ClientChestLootTable;
 import fzzyhmstrs.emi_loot.util.LText;
 import net.minecraft.client.MinecraftClient;
@@ -58,9 +58,8 @@ public class ChestLootRecipe implements EmiRecipe {
         MutableText text = LText.translatable(key);
         MutableText rawTitle;
         if (Objects.equals(text.getString(), key)){
-            // ok so maybe this is cheating
-            if (Platform.isModLoaded(loot.id.getNamespace())){
-                rawTitle = LText.translatable("emi_loot.chest.unknown_chest", loot.id.getNamespace());
+            if (EMILootExpectPlatform.isModLoaded(loot.id.getNamespace())){
+                rawTitle = LText.translatable("emi_loot.chest.unknown_chest", EMILootExpectPlatform.getModName(loot.id.getNamespace()));
             } else {
                 Text unknown = LText.translatable("emi_loot.chest.unknown");
                 rawTitle = LText.translatable("emi_loot.chest.unknown_chest", unknown.getString());
@@ -76,7 +75,7 @@ public class ChestLootRecipe implements EmiRecipe {
         } else {
             title = rawTitle;
         }
-    }    
+    }
 
     private final ClientChestLootTable loot;
     //private final Map<EmiStack, Float> lootStacks;

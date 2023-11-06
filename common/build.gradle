@@ -13,7 +13,6 @@ dependencies {
 
     modApi "dev.architectury:architectury:${rootProject.architectury_version}"
     modCompileOnly "dev.emi:emi-xplat-intermediary:${rootProject.emi_version}+${rootProject.minecraft_version}:api"
-    modImplementation "dev.emi:emi-xplat-intermediary:${rootProject.emi_version}+${rootProject.minecraft_version}"
 }
 
 publishing {

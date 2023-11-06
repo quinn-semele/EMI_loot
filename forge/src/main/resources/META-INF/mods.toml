@@ -27,15 +27,15 @@ ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.emi_loot]]
-    modId="emi"
-    mandatory=true
-    versionRange="[1.0.0,)"
-    ordering="AFTER"
-    side="BOTH"
+modId="emi"
+mandatory=true
+versionRange="[1.0.0,)"
+ordering="AFTER"
+side="BOTH"
 
 [[dependencies.emi_loot]]
 modId = "architectury"
 mandatory = true
-versionRange = "[6.5.77,)"
+versionRange = "[6.5.85,)"
 ordering = "AFTER"
 side = "BOTH"

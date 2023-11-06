@@ -10,6 +10,7 @@ import fzzyhmstrs.emi_loot.EMILoot;
 import fzzyhmstrs.emi_loot.EMILootClient;
 import fzzyhmstrs.emi_loot.client.ClientBuiltPool;
 import fzzyhmstrs.emi_loot.client.ClientMobLootTable;
+import fzzyhmstrs.emi_loot.client.ClientResourceData;
 import fzzyhmstrs.emi_loot.util.EntityEmiStack;
 import fzzyhmstrs.emi_loot.util.IconGroupEmiWidget;
 import fzzyhmstrs.emi_loot.util.LText;
@@ -65,9 +66,9 @@ public class MobLootRecipe implements EmiRecipe {
                 name = entity.getName();
             }
             double scale = 1.05 / len * 8.0;
-            //if (ClientResourceData.MOB_SCALES.containsKey(type)){
-            //    scale *= ClientResourceData.MOB_SCALES.getOrDefault(type,1.0f);
-            //}
+            if (ClientResourceData.MOB_SCALES.containsKey(type)){
+                scale *= ClientResourceData.MOB_SCALES.getOrDefault(type,1.0f);
+            }
             inputStack = EntityEmiStack.ofScaled(entity,scale);
         } else{
             inputStack = EmiStack.EMPTY;
@@ -157,13 +158,13 @@ public class MobLootRecipe implements EmiRecipe {
         int x = 0;
         int y = 0;
         //draw the mob
-        //if (!ClientResourceData.MOB_OFFSETS.containsKey(type)) {
+        if (!ClientResourceData.MOB_OFFSETS.containsKey(type)) {
             widgets.addSlot(inputStack, x, y).large(true);
-        //} else {
-        //    int offset = ClientResourceData.MOB_OFFSETS.getOrDefault(type,0);
-        //    widgets.addTexture(EmiTexture.LARGE_SLOT,x,y);
-        //    widgets.addDrawable(x,y,16,16,(matrices,mx,my,delta)->inputStack.render(matrices,5, 6 + offset,delta));
-        //}
+        } else {
+            int offset = ClientResourceData.MOB_OFFSETS.getOrDefault(type,0);
+            widgets.addTexture(EmiTexture.LARGE_SLOT,x,y);
+            widgets.addDrawable(x,y,16,16,(matrices,mx,my,delta)->inputStack.render(matrices,5, 6 + offset,delta));
+        }
         widgets.addText(name.asOrderedText(),30,0,0x404040,false);
         if (rowBuilderList.size() == 1 && rowBuilderList.get(0).getWidth() <= 94){
             widgets.addTexture(new EmiTexture(ARROW_ID, 0, 16, 39, 15, 39, 15, 64, 32), 30, 10);

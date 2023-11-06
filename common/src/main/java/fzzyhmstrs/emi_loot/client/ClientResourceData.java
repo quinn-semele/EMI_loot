@@ -3,7 +3,6 @@ package fzzyhmstrs.emi_loot.client;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import dev.architectury.registry.ReloadListenerRegistry;
 import fzzyhmstrs.emi_loot.EMILoot;
 import it.unimi.dsi.fastutil.objects.Object2FloatMap;
 import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
@@ -12,7 +11,6 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.entity.EntityType;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.ResourceType;
 import net.minecraft.resource.SynchronousResourceReloader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3f;
@@ -21,7 +19,6 @@ import net.minecraft.util.registry.Registry;
 import java.io.BufferedReader;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 public class ClientResourceData {
 
@@ -29,11 +26,7 @@ public class ClientResourceData {
     public static final Object2FloatMap<EntityType<?>> MOB_SCALES = new Object2FloatOpenHashMap<>();
     public static final Map<EntityType<?>, Vec3f> MOB_ROTATIONS = new HashMap<>();
 
-    public static void register(){
-        ReloadListenerRegistry.register(ResourceType.CLIENT_RESOURCES, (synchronizer, manager, prepareProfiler, applyProfiler, prepareExecutor, applyExecutor) -> CompletableFuture.runAsync(() -> new EntityOffsetsReloadListener().reload(manager)), new Identifier(EMILoot.MOD_ID,"client_loot_resources"));
-    }
-
-    private static class EntityOffsetsReloadListener implements SynchronousResourceReloader {
+    public static class EntityOffsetsReloadListener implements SynchronousResourceReloader {
         @Override
         public void reload(ResourceManager manager) {
             MOB_OFFSETS.clear();

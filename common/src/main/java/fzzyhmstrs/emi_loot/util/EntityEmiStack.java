@@ -40,8 +40,8 @@ public class EntityEmiStack extends EmiStack {
     protected EntityEmiStack(@Nullable Entity entity, double scale) {
         this.entity = entity;
         if (entity != null) {
-            boolean hasTransform = false; //ClientResourceData.MOB_ROTATIONS.containsKey(entity.getType());
-            Vec3f transform = Vec3f.ZERO; //ClientResourceData.MOB_ROTATIONS.getOrDefault(entity.getType(),Vec3f.ZERO);
+            boolean hasTransform = ClientResourceData.MOB_ROTATIONS.containsKey(entity.getType());
+            Vec3f transform = ClientResourceData.MOB_ROTATIONS.getOrDefault(entity.getType(),Vec3f.ZERO);
             ctx = new EntityRenderContext(scale,hasTransform,transform);
         } else {
             ctx = new EntityRenderContext(scale,false,Vec3f.ZERO);

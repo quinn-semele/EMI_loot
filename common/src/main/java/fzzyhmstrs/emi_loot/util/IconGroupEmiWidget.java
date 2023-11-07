@@ -105,7 +105,19 @@ public class IconGroupEmiWidget extends Widget {
             icon.render(matrices, mouseX, mouseY, delta);
         }
         for (SlotWidget slot: items){
-            slot.render(matrices, mouseX, mouseY, delta);
+            SlotWidget$render(slot, matrices, mouseX, mouseY, delta);
         }
+    }
+
+    public void m_6305_(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        render(matrices, mouseX, mouseY, delta);
+    }
+
+    private void SlotWidget$render(SlotWidget slot, MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+        slot.drawBackground(matrices, mouseX, mouseY, delta);
+        slot.drawStack(matrices, mouseX, mouseY, delta);
+        slot.drawOverlay(matrices, mouseX, mouseY, delta);
     }
 }

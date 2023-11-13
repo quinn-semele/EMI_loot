@@ -1,21 +1,11 @@
-# IT WORKS!?
-
-EMI Loot (Forge) TODO:
-
-- backport fixes from >1.19
-- fix resource reload listener
-- remove Architectury API dependency??
-  - (use EMI impls for "reference")
-- see what else i broke lol
-
-***
-
 # Emi Loot
 <p align="left">
 <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-brightgreen.svg"></a>
 </p>
 
 Emi Loot is a plugin for [EMI](https://github.com/emilyploszaj/emi) that displays loot drops from chests, mobs, blocks, and more.
+
+This is a fork of Emi Loot for 1.19.2 that introduces Forge support, wowie!
 
 Credit for loot condition icon art goes to [lxly9](https://github.com/lxly9). Thank you!!
 

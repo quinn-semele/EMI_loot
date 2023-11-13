@@ -55,8 +55,4 @@ public class IconEmiWidget extends Widget {
         RenderSystem.setShaderTexture(0, tex);
         DrawableHelper.drawTexture(matrices, x + 2, y + 2, 8, 8, 0, 0, 8, 8, 8, 8);
     }
-
-    public void m_6305_(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        render(matrices, mouseX, mouseY, delta);
-    }
 }

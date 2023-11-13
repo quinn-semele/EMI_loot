@@ -110,10 +110,6 @@ public class IconGroupEmiWidget extends Widget {
         }
     }
 
-    public void m_6305_(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        render(matrices, mouseX, mouseY, delta);
-    }
-
     private void SlotWidget$render(SlotWidget slot, MatrixStack matrices, int mouseX, int mouseY, float delta) {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);

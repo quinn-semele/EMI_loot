@@ -21,8 +21,7 @@
     ]
   },
   "mixins": [
-    "emi_loot-common.mixins.json",
-    "emi_loot-fabric.mixins.json"
+    "emi_loot-common.mixins.json"
   ],
   "license": "MIT License",
   "accessWidener": "emi_loot.accesswidener",

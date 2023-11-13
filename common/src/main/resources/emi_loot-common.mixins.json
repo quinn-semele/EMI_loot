@@ -39,6 +39,7 @@
     "LootManagerMixin",
     "LootPoolAccessor",
     "LootPoolEntryAccessor",
+    "LootTableMixin",
     "LootTableEntryAccessor",
     "MatchToolLootConditionAccessor",
     "NbtPredicateAccessor",

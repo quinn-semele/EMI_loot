@@ -2,13 +2,13 @@ package fzzyhmstrs.emi_loot.parser;
 
 import com.google.common.collect.Multimap;
 import fzzyhmstrs.emi_loot.EMILoot;
-import fzzyhmstrs.emi_loot.EMILootExpectPlatform;
 import fzzyhmstrs.emi_loot.mixins.*;
 import fzzyhmstrs.emi_loot.parser.processor.NumberProcessors;
 import fzzyhmstrs.emi_loot.parser.registry.LootParserRegistry;
 import fzzyhmstrs.emi_loot.server.*;
 import fzzyhmstrs.emi_loot.util.LText;
 import fzzyhmstrs.emi_loot.util.LootManagerConditionManager;
+import fzzyhmstrs.emi_loot.util.LootTablePools;
 import fzzyhmstrs.emi_loot.util.TextKey;
 import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
@@ -179,7 +179,7 @@ public class LootTableParser {
 
     private static ChestLootTableSender parseChestLootTable(LootTable lootTable, Identifier id){
         ChestLootTableSender sender = new ChestLootTableSender(id);
-        for (LootPool pool : EMILootExpectPlatform.getPools(lootTable)) {
+        for (LootPool pool : ((LootTablePools) lootTable).getPools()) {
             LootNumberProvider rollProvider = ((LootPoolAccessor) pool).getRolls();
             float rollAvg = NumberProcessors.getRollAvg(rollProvider);
             ChestLootPoolBuilder builder = new ChestLootPoolBuilder(rollAvg);
@@ -212,7 +212,7 @@ public class LootTableParser {
     }
 
     private static void parseBlockLootTableInternal(LootTable lootTable, BlockLootTableSender sender, boolean isDirect){
-        for (LootPool pool : EMILootExpectPlatform.getPools(lootTable)) {
+        for (LootPool pool : ((LootTablePools) lootTable).getPools()) {
             LootCondition[] conditions = ((LootPoolAccessor) pool).getConditions();
             List<LootConditionResult> parsedConditions = parseLootConditions(conditions,ItemStack.EMPTY,false);
             if (isDirect){
@@ -255,7 +255,7 @@ public class LootTableParser {
     }
 
     private static void parseMobLootTableInternal(LootTable lootTable, MobLootTableSender sender, boolean isDirect){
-        for (LootPool pool : EMILootExpectPlatform.getPools(lootTable)) {
+        for (LootPool pool : ((LootTablePools) lootTable).getPools()) {
             LootCondition[] conditions = ((LootPoolAccessor) pool).getConditions();
             List<LootConditionResult> parsedConditions = parseLootConditions(conditions,ItemStack.EMPTY,false);
             if (isDirect){
@@ -280,7 +280,7 @@ public class LootTableParser {
 
     private static GameplayLootTableSender parseGameplayLootTable(LootTable lootTable, Identifier id){
         GameplayLootTableSender sender = new GameplayLootTableSender(id);
-        for (LootPool pool : EMILootExpectPlatform.getPools(lootTable)) {
+        for (LootPool pool : ((LootTablePools) lootTable).getPools()) {
             LootCondition[] conditions = ((LootPoolAccessor) pool).getConditions();
             List<LootConditionResult> parsedConditions = parseLootConditions(conditions,ItemStack.EMPTY,false);
             LootFunction[] functions = ((LootPoolAccessor) pool).getFunctions();

@@ -15,8 +15,7 @@ loom {
         extraAccessWideners.add loom.accessWidenerPath.get().asFile.name
 
         mixinConfigs = [
-                "emi_loot-common.mixins.json",
-                "emi_loot-forge.mixins.json"
+                "emi_loot-common.mixins.json"
         ]
     }
 }

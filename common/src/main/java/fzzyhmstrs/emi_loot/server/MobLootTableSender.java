@@ -6,9 +6,9 @@ import io.netty.buffer.Unpooled;
 import lol.bai.badpackets.api.PacketSender;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -57,7 +57,7 @@ public class MobLootTableSender implements LootSender<MobLootPoolBuilder> {
         if (builderList.size() == 1 && builderList.get(0).isSimple) {
             if (EMILoot.DEBUG) EMILoot.LOGGER.info("sending simple mob: " + idToSend);
             buf.writeShort(-1);
-            buf.writeRegistryValue(Registry.ITEM, builderList.get(0).simpleStack.getItem());
+            buf.writeRegistryValue(Registries.ITEM, builderList.get(0).simpleStack.getItem());
             PacketSender.s2c(player).send(MOB_SENDER, buf);
             return;
         } else if (builderList.isEmpty()){

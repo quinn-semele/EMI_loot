@@ -1,7 +1,12 @@
 package fzzyhmstrs.emi_loot.util;
 
-import net.minecraft.loot.condition.LootConditionManager;
+
+import net.minecraft.loot.LootDataKey;
+
+import java.util.Map;
 
 public interface LootManagerConditionManager {
-    LootConditionManager getManager();
+
+    Map<LootDataKey<?>, ?> getKeysToValues();
+
 }

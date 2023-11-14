@@ -18,10 +18,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 import net.minecraft.world.World;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 abstract public class AbstractTextKeyParsingClientLootTable<T extends LootReceiver> implements LootReceiver{
@@ -49,6 +46,8 @@ abstract public class AbstractTextKeyParsingClientLootTable<T extends LootReceiv
             return new Identifier("chests/" + idToParse.substring(2));
         } else if (idToParse.startsWith("g/")){
             return new Identifier("gameplay/" + idToParse.substring(2));
+        } else if (idToParse.startsWith("a/")) {
+            return new Identifier("archaeology/" + idToParse.substring(2));
         } else {
             return new Identifier(idToParse);
         }

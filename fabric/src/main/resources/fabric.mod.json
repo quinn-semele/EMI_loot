@@ -26,8 +26,8 @@
   "license": "MIT License",
   "accessWidener": "emi_loot.accesswidener",
   "depends": {
-    "minecraft": "1.19.x",
+    "minecraft": ">=1.20",
     "emi": ">=1.0.0",
-    "badpackets": ">=0.2.0"
+    "badpackets": ">=0.4.0"
   }
 }

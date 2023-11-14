@@ -17,20 +17,20 @@ import net.minecraft.world.World;
 import java.util.*;
 
 @SuppressWarnings("deprecation")
-public class ClientGameplayLootTable extends AbstractTextKeyParsingClientLootTable<ClientGameplayLootTable> {
+public class ClientBlockLootTable extends AbstractTextKeyParsingClientLootTable<ClientBlockLootTable> {
 
-    public static ClientGameplayLootTable INSTANCE = new ClientGameplayLootTable();
+    public static ClientBlockLootTable INSTANCE = new ClientBlockLootTable();
     private static final Identifier EMPTY = new Identifier("blocks/empty");
     public final Identifier id;
     public final Identifier blockId;
 
-    public ClientGameplayLootTable(){
+    public ClientBlockLootTable(){
         super();
         this.id = EMPTY;
         this.blockId = new Identifier("air");
     }
 
-    public ClientGameplayLootTable(Identifier id, Map<List<TextKey>, ClientRawPool> map){
+    public ClientBlockLootTable(Identifier id, Map<List<TextKey>, ClientRawPool> map){
         super(map);
         this.id = id;
         String ns = id.getNamespace();
@@ -92,7 +92,7 @@ public class ClientGameplayLootTable extends AbstractTextKeyParsingClientLootTab
     }
 
     @Override
-    ClientGameplayLootTable simpleTableToReturn(Pair<Identifier,Identifier> ids, PacketByteBuf buf) {
+    ClientBlockLootTable simpleTableToReturn(Pair<Identifier,Identifier> ids,PacketByteBuf buf) {
         ClientRawPool simplePool = new ClientRawPool(new HashMap<>());
         Object2FloatMap<ItemStack> simpleMap = new Object2FloatOpenHashMap<>();
         ItemStack simpleStack = new ItemStack(buf.readRegistryValue(Registries.ITEM));
@@ -100,16 +100,16 @@ public class ClientGameplayLootTable extends AbstractTextKeyParsingClientLootTab
         simplePool.map().put(new ArrayList<>(),simpleMap);
         Map<List<TextKey>, ClientRawPool> itemMap = new HashMap<>();
         itemMap.put(new ArrayList<>(),simplePool);
-        return new ClientGameplayLootTable(ids.getLeft(),itemMap);
+        return new ClientBlockLootTable(ids.getLeft(),itemMap);
     }
 
     @Override
-    ClientGameplayLootTable emptyTableToReturn() {
-        return new ClientGameplayLootTable();
+    ClientBlockLootTable emptyTableToReturn() {
+        return new ClientBlockLootTable();
     }
 
     @Override
-    ClientGameplayLootTable filledTableToReturn(Pair<Identifier,Identifier> ids, Map<List<TextKey>, ClientRawPool> itemMap) {
-        return new ClientGameplayLootTable(ids.getLeft(),itemMap);
+    ClientBlockLootTable filledTableToReturn(Pair<Identifier,Identifier> ids, Map<List<TextKey>, ClientRawPool> itemMap) {
+        return new ClientBlockLootTable(ids.getLeft(),itemMap);
     }
 }

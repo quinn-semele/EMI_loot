@@ -6,10 +6,9 @@ import dev.emi.emi.api.widget.Bounds;
 import dev.emi.emi.api.widget.SlotWidget;
 import dev.emi.emi.api.widget.Widget;
 import fzzyhmstrs.emi_loot.client.ClientBuiltPool;
-import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Pair;
 
@@ -89,32 +88,22 @@ public class IconGroupEmiWidget extends Widget {
     }
 
     @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+    public void render(DrawContext draw, int mouseX, int mouseY, float delta) {
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-        RenderSystem.setShaderTexture(0,FRAME_ID);
         int widthRemaining = itemsWidth;
         int xNew = x + iconsWidth;
         do{
             int newWidth = Math.min(64,widthRemaining);
-            DrawableHelper.drawTexture(matrices, xNew, y, newWidth, 1, 0, 0, newWidth, 1, 64, 16);
+            draw.drawTexture(FRAME_ID, xNew, y, newWidth, 1, 0, 0, newWidth, 1, 64, 16);
             xNew += newWidth;
             widthRemaining -= newWidth;
         } while (widthRemaining > 0);
-        DrawableHelper.fill(matrices,x,y,x + width,y+1,0x555555);
+        draw.fill(RenderLayer.getGui(),x,x + width,y,y+1,0x555555);
         for (IconEmiWidget icon: icons){
-            icon.render(matrices, mouseX, mouseY, delta);
+            icon.render(draw, mouseX, mouseY, delta);
         }
         for (SlotWidget slot: items){
-            SlotWidget$render(slot, matrices, mouseX, mouseY, delta);
+            slot.render(draw, mouseX, mouseY, delta);
         }
-    }
-
-    private void SlotWidget$render(SlotWidget slot, MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-        slot.drawBackground(matrices, mouseX, mouseY, delta);
-        slot.drawStack(matrices, mouseX, mouseY, delta);
-        slot.drawOverlay(matrices, mouseX, mouseY, delta);
     }
 }

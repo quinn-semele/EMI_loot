@@ -15,10 +15,11 @@ import net.minecraft.loot.condition.LootConditionType;
 import net.minecraft.loot.condition.LootConditionTypes;
 import net.minecraft.loot.function.LootFunctionType;
 import net.minecraft.loot.function.LootFunctionTypes;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.random.LocalRandom;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.Registry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,7 +61,8 @@ public class EMILoot {
     }
 
     public static void register() {
-        Registry.register(Registry.ENCHANTMENT,new Identifier(MOD_ID,"random"),RANDOM);
+        parser.registerServer();
+        //Registry.register(Registry.ENCHANTMENT,new Identifier(MOD_ID,"random"),RANDOM);
 
         WITHER_KILL = LootConditionTypes.register("lootify:wither_kill", new KilledByWitherLootCondition.Serializer());
         SPAWNS_WITH = LootConditionTypes.register("lootify:spawns_with", new MobSpawnedWithLootCondition.Serializer());
@@ -140,7 +142,9 @@ public class EMILoot {
         public boolean chestLootAlwaysStackSame = false;
 
         public boolean mobLootIncludeDirectDrops = true;
-    }
+
+        public boolean parseArchaeologyLoot = true;
+	}
 
     public static class EmiLootConfigOld{
         public boolean parseChestLoot = true;

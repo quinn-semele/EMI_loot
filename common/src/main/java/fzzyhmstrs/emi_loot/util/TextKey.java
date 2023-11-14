@@ -13,6 +13,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.Math;
 import java.util.*;
 import java.util.function.Function;
 
@@ -251,7 +252,8 @@ public record TextKey(int index, List<String> args){
         if (this.index == 8 && world != null){
             Optional<SmeltingRecipe> opt = world.getRecipeManager().getFirstMatch(RecipeType.SMELTING,new SimpleInventory(stack),world);
             if (opt.isPresent()){
-                ItemStack tempStack = opt.get().getOutput();
+                // Since AbstractCookingRecipe doesn't use the registryManager we can safely pass null here
+                ItemStack tempStack = opt.get().getOutput(null);
                 if (!tempStack.isEmpty()) {
                     //System.out.println(tempStack);
                     finalStack = tempStack.copy();

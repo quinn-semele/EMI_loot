@@ -5,6 +5,7 @@ import net.minecraft.loot.LootPool;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.context.LootContextType;
 import net.minecraft.loot.function.LootFunction;
+import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -22,7 +23,7 @@ public class LootTableMixin implements LootTablePools {
     }
 
     @Inject(method = "<init>", at = @At(value = "RETURN"))
-    private void emi_loot_initPools(LootContextType type, LootPool[] pools, LootFunction[] functions, CallbackInfo ci) {
+    private void emi_loot_initPools(LootContextType type, Identifier randomSequenceId, LootPool[] pools, LootFunction[] functions, CallbackInfo ci) {
         this.emi_loot$pools = pools;
     }
 }

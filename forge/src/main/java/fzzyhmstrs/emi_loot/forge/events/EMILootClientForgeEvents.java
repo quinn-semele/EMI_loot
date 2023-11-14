@@ -11,7 +11,7 @@ public class EMILootClientForgeEvents {
 
     @SubscribeEvent
     public void onClientSetup(FMLClientSetupEvent event) {
-        EMILootClient.init(tables);
+        EMILootClient.init();
     }
 
     @SubscribeEvent

@@ -2,9 +2,7 @@ package fzzyhmstrs.emi_loot.util;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.emi.emi.api.render.EmiTooltipComponents;
-import dev.emi.emi.api.render.EmiTooltipComponents;
 import dev.emi.emi.api.stack.EmiStack;
-import fzzyhmstrs.emi_loot.EMILootExpectPlatform;
 import fzzyhmstrs.emi_loot.EMILootExpectPlatform;
 import fzzyhmstrs.emi_loot.client.ClientResourceData;
 import net.minecraft.client.MinecraftClient;

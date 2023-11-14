@@ -1,8 +1,7 @@
 package fzzyhmstrs.emi_loot.client;
 
 import fzzyhmstrs.emi_loot.EMILoot;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
+import lol.bai.badpackets.api.S2CPacketReceiver;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -21,34 +20,31 @@ public class ClientLootTables {
     }
 
     public void registerClient(){
-        
-        ClientPlayConnectionEvents.DISCONNECT.register((handler,client) -> loots.clear());
-        
-        ClientPlayNetworking.registerGlobalReceiver(CHEST_SENDER,(minecraftClient, playNetworkHandler, buf, sender)-> {
+        S2CPacketReceiver.register(CHEST_SENDER, (client, handler, buf, responseSender) -> {
             LootReceiver table = ClientChestLootTable.INSTANCE.fromBuf(buf);
             loots.add(table);
             if (EMILoot.DEBUG) EMILoot.LOGGER.info("received chest " + table.getId());
         });
-        
-        ClientPlayNetworking.registerGlobalReceiver(BLOCK_SENDER,(minecraftClient, playNetworkHandler, buf, sender)-> {
+
+        S2CPacketReceiver.register(BLOCK_SENDER, (client, handler, buf, responseSender) -> {
             LootReceiver table = ClientBlockLootTable.INSTANCE.fromBuf(buf);
             loots.add(table);
             if (EMILoot.DEBUG) EMILoot.LOGGER.info("received block " + table.getId());
         });
-        
-        ClientPlayNetworking.registerGlobalReceiver(MOB_SENDER,(minecraftClient, playNetworkHandler, buf, sender)-> {
+
+        S2CPacketReceiver.register(MOB_SENDER, (client, handler, buf, responseSender) -> {
             LootReceiver table = ClientMobLootTable.INSTANCE.fromBuf(buf);
             loots.add(table);
             if (EMILoot.DEBUG) EMILoot.LOGGER.info("received mob " + table.getId());
         });
-        
-        ClientPlayNetworking.registerGlobalReceiver(GAMEPLAY_SENDER,(minecraftClient, playNetworkHandler, buf, sender)-> {
+
+        S2CPacketReceiver.register(GAMEPLAY_SENDER, (client, handler, buf, responseSender) -> {
             LootReceiver table = ClientGameplayLootTable.INSTANCE.fromBuf(buf);
             loots.add(table);
             if (EMILoot.DEBUG) EMILoot.LOGGER.info("received gameplay loot: " + table.getId());
         });
 
-        ClientPlayNetworking.registerGlobalReceiver(ARCHAEOLOGY_SENDER, (minecraftClient, playNetworkHandler, buf, sender) -> {
+        S2CPacketReceiver.register(ARCHAEOLOGY_SENDER, (client, handler, buf, responseSender) -> {
             LootReceiver table = ClientArchaeologyLootTable.INSTANCE.fromBuf(buf);
             loots.add(table);
             if (EMILoot.DEBUG) EMILoot.LOGGER.info("received archaeology loot: " + table.getId());

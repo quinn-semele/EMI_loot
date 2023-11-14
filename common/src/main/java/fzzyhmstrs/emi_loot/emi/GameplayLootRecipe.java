@@ -2,34 +2,20 @@ package fzzyhmstrs.emi_loot.emi;
 
 import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.api.recipe.EmiRecipeCategory;
-import dev.emi.emi.api.render.EmiTexture;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.widget.WidgetHolder;
-import fzzyhmstrs.emi_loot.EMILoot;
 import fzzyhmstrs.emi_loot.EMILootClient;
+import fzzyhmstrs.emi_loot.EMILootExpectPlatform;
 import fzzyhmstrs.emi_loot.client.ClientBuiltPool;
 import fzzyhmstrs.emi_loot.client.ClientGameplayLootTable;
-import fzzyhmstrs.emi_loot.client.ClientMobLootTable;
-import fzzyhmstrs.emi_loot.client.ClientResourceData;
-import fzzyhmstrs.emi_loot.util.EntityEmiStack;
 import fzzyhmstrs.emi_loot.util.IconGroupEmiWidget;
 import fzzyhmstrs.emi_loot.util.LText;
 import fzzyhmstrs.emi_loot.util.WidgetRowBuilder;
-import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.mob.SlimeEntity;
-import net.minecraft.entity.passive.SheepEntity;
-import net.minecraft.registry.Registries;
-import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Box;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedList;
@@ -54,10 +40,8 @@ public class GameplayLootRecipe implements EmiRecipe {
         String key = "emi_loot.gameplay." + loot.id.toString();
         Text text = LText.translatable(key);
         if (Objects.equals(text.getString(), key)){
-            Optional<ModContainer> modNameOpt = FabricLoader.getInstance().getModContainer(loot.id.getNamespace());
-            if (modNameOpt.isPresent()){
-                ModContainer modContainer = modNameOpt.get();
-                String modName = modContainer.getMetadata().getName();
+            if(EMILootExpectPlatform.isModLoaded(loot.id.getNamespace())) {
+                String modName = EMILootExpectPlatform.getModName(loot.id.getNamespace());
                 name = LText.translatable("emi_loot.gameplay.unknown_gameplay",modName);
             } else {
                 Text unknown = LText.translatable("emi_loot.gameplay.unknown");

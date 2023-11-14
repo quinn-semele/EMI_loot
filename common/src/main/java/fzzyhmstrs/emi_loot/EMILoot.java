@@ -15,9 +15,6 @@ import net.minecraft.loot.condition.LootConditionType;
 import net.minecraft.loot.condition.LootConditionTypes;
 import net.minecraft.loot.function.LootFunctionType;
 import net.minecraft.loot.function.LootFunctionTypes;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.random.LocalRandom;
 import net.minecraft.util.math.random.Random;
 import org.slf4j.Logger;
@@ -61,7 +58,6 @@ public class EMILoot {
     }
 
     public static void register() {
-        parser.registerServer();
         //Registry.register(Registry.ENCHANTMENT,new Identifier(MOD_ID,"random"),RANDOM);
 
         WITHER_KILL = LootConditionTypes.register("lootify:wither_kill", new KilledByWitherLootCondition.Serializer());

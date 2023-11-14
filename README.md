@@ -5,7 +5,7 @@
 
 Emi Loot is a plugin for [EMI](https://github.com/emilyploszaj/emi) that displays loot drops from chests, mobs, blocks, and more.
 
-This is a fork of Emi Loot for 1.19.2 that introduces Forge support, wowie!  
+This is a fork of Emi Loot that introduces Forge support, wowie!  
 (depends on [bad packets](https://github.com/badasintended/badpackets) because networking is hard)
 
 Credit for loot condition icon art goes to [lxly9](https://github.com/lxly9). Thank you!!

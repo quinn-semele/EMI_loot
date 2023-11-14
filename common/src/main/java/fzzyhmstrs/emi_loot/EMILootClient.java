@@ -5,10 +5,9 @@ import fzzyhmstrs.emi_loot.client.ClientLootTables;
 public class EMILootClient {
 
     public static String MOD_ID = "emi_loot";
-    public static ClientLootTables tables;
+    public static ClientLootTables tables = new ClientLootTables();
 
-    public static void init(ClientLootTables tables) {
-        EMILootClient.tables = tables;
+    public static void init() {
         tables.registerClient();
     }
 }

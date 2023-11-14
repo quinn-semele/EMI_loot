@@ -13,7 +13,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.Math;
 import java.util.*;
 import java.util.function.Function;
 

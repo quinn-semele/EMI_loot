@@ -125,7 +125,13 @@ public class MobLootRecipe implements EmiRecipe {
 
     @Override
     public List<EmiIngredient> getInputs() {
-        return new LinkedList<>();
+        if (inputStack instanceof EntityEmiStack entityStack
+                && entityStack.getKey() instanceof Entity entity
+                && entity.getPickBlockStack() != null) {
+            return List.of(EmiStack.of(entity.getPickBlockStack()));
+        } else {
+            return new LinkedList<>();
+        }
     }
 
     @Override

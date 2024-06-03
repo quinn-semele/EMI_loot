@@ -10,8 +10,10 @@ import fzzyhmstrs.emi_loot.util.LText;
 import fzzyhmstrs.emi_loot.util.LootManagerConditionManager;
 import fzzyhmstrs.emi_loot.util.LootTablePools;
 import fzzyhmstrs.emi_loot.util.TextKey;
+import io.netty.buffer.Unpooled;
 import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
+import lol.bai.badpackets.api.PacketSender;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -29,6 +31,7 @@ import net.minecraft.loot.function.ConditionalLootFunction;
 import net.minecraft.loot.function.LootFunction;
 import net.minecraft.loot.function.LootFunctionType;
 import net.minecraft.loot.provider.number.LootNumberProvider;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.tag.TagKey;
 import net.minecraft.text.MutableText;
@@ -71,8 +74,6 @@ public class LootTableParser {
     }
 
     public void registerServer(ServerPlayerEntity player){
-        //TODO
-        //ServerLifecycleEvents.SYNC_DATA_PACK_CONTENTS.register((player, joined) -> {
         if (!hasPostProcessed()){
             EMILoot.LOGGER.warn("Post-processing not completed for some reason, completing now...");
             for (PostProcessor process: PostProcessor.values()){
@@ -80,8 +81,7 @@ public class LootTableParser {
             }
             EMILoot.LOGGER.warn("Post-processing complete!");
         }
-        //TODO
-        //ServerPlayNetworking.send(player, CLEAR_LOOTS, PacketByteBufs.empty());
+        PacketSender.s2c(player).send(CLEAR_LOOTS, new PacketByteBuf(Unpooled.buffer()));
         if (EMILoot.config.parseChestLoot)
             chestSenders.forEach((id,chestSender) -> chestSender.send(player));
         if (EMILoot.config.parseBlockLoot)
@@ -188,12 +188,12 @@ public class LootTableParser {
         for (LootPool pool : ((LootTablePools) lootTable).getPools()) {
             LootNumberProvider rollProvider = ((LootPoolAccessor) pool).getRolls();
             float conditionalMultiplier = 1f;
-            for (LootCondition condition : pool.conditions){
+            for (LootCondition condition : ((LootPoolAccessor) pool).getConditions()){
                 if (condition instanceof RandomChanceLootCondition){
                     conditionalMultiplier *= ((RandomChanceLootConditionAccessor)condition).getChance();
                 }
             }
-            float rollAvg = NumberProcessors.getRollAvg(rollProvider);
+            float rollAvg = NumberProcessors.getRollAvg(rollProvider) * conditionalMultiplier;
             ChestLootPoolBuilder builder = new ChestLootPoolBuilder(rollAvg);
             LootPoolEntry[] entries = ((LootPoolAccessor) pool).getEntries();
             for (LootPoolEntry entry : entries) {

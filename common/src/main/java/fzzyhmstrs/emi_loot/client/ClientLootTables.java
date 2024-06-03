@@ -1,6 +1,7 @@
 package fzzyhmstrs.emi_loot.client;
 
 import fzzyhmstrs.emi_loot.EMILoot;
+import fzzyhmstrs.emi_loot.parser.LootTableParser;
 import lol.bai.badpackets.api.S2CPacketReceiver;
 
 import java.util.LinkedList;
@@ -11,7 +12,6 @@ import static fzzyhmstrs.emi_loot.server.ChestLootTableSender.CHEST_SENDER;
 import static fzzyhmstrs.emi_loot.server.GameplayLootTableSender.GAMEPLAY_SENDER;
 import static fzzyhmstrs.emi_loot.server.MobLootTableSender.MOB_SENDER;
 
-@SuppressWarnings("UnstableApiUsage")
 public class ClientLootTables {
     private final List<LootReceiver> loots = new LinkedList<>();
 
@@ -20,9 +20,7 @@ public class ClientLootTables {
     }
 
     public void registerClient(){
-//        ClientPlayConnectionEvents.DISCONNECT.register((handler,client) -> loots.clear());
-//
-//        ClientPlayNetworking.registerGlobalReceiver(LootTableParser.CLEAR_LOOTS, (minecraftClient, playNetworkHandler, buf, sender) -> loots.clear());
+        S2CPacketReceiver.register(LootTableParser.CLEAR_LOOTS, ((client, handler, buf, responseSender) -> loots.clear()));
 
         S2CPacketReceiver.register(CHEST_SENDER, (client, handler, buf, responseSender) -> {
             LootReceiver table = ClientChestLootTable.INSTANCE.fromBuf(buf);

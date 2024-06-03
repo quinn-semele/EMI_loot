@@ -43,7 +43,7 @@ public class GameplayLootTableSender implements LootSender<GameplayLootPoolBuild
 
     @Override
     public void send(ServerPlayerEntity player) {
-        if (!ServerPlayNetworking.canSend(player,GAMEPLAY_SENDER)) return;
+        if (!PacketSender.s2c(player).canSend(GAMEPLAY_SENDER)) return;
         if (isEmpty){
             if (EMILoot.DEBUG) EMILoot.LOGGER.info("avoiding empty gameplay table: " + idToSend);
             return;

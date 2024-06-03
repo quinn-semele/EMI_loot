@@ -1,8 +1,7 @@
 package fzzyhmstrs.emi_loot.forge.events;
 
 import fzzyhmstrs.emi_loot.EMILoot;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.OnDatapackSyncEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.registries.RegisterEvent;
 
@@ -13,9 +12,7 @@ public class EMILootForgeEvents {
     }
 
     @SubscribeEvent
-    public void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
-        if (event.getEntity() instanceof ServerPlayerEntity player) {
-            EMILoot.parser.registerServer(player);
-        }
+    public void onDatapackSync(OnDatapackSyncEvent event) {
+        EMILoot.parser.registerServer(event.getPlayer());
     }
 }

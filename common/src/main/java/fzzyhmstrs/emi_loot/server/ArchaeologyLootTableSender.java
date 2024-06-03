@@ -29,7 +29,9 @@ public class ArchaeologyLootTableSender implements LootSender<ArchaeologyLootPoo
 
 	@Override
 	public void send(ServerPlayerEntity player) {
-		PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+        //TODO
+        //if (!ServerPlayNetworking.canSend(player,ARCHAEOLOGY_SENDER)) return;
+        PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
 		buf.writeString(idToSend);
 		buf.writeShort(floatMap.size());
 		floatMap.forEach((item, floatWeight) -> {

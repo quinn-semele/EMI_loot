@@ -20,6 +20,9 @@ public class ClientLootTables {
     }
 
     public void registerClient(){
+        //TODO
+        //ClientPlayNetworking.registerGlobalReceiver(LootTableParser.CLEAR_LOOTS, (minecraftClient, playNetworkHandler, buf, sender) -> loots.clear());
+
         S2CPacketReceiver.register(CHEST_SENDER, (client, handler, buf, responseSender) -> {
             LootReceiver table = ClientChestLootTable.INSTANCE.fromBuf(buf);
             loots.add(table);

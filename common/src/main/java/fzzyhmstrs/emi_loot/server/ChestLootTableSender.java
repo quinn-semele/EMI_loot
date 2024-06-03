@@ -45,14 +45,17 @@ public class ChestLootTableSender implements LootSender<ChestLootPoolBuilder> {
 
     @Override
     public void send(ServerPlayerEntity player) {
+        //TODO
+        //if (!ServerPlayNetworking.canSend(player,CHEST_SENDER)) return;
         PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
         buf.writeString(idToSend);
         buf.writeShort(floatMap.size());
-        floatMap.forEach((item, floatWeight)->{
+        floatMap.forEach((item, floatWeight) -> {
             buf.writeItemStack(item);
             buf.writeFloat(floatWeight);
         });
         PacketSender.s2c(player).send(CHEST_SENDER, buf);
+
     }
 
     @Override

@@ -1,5 +1,10 @@
 package fzzyhmstrs.emi_loot.forge;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import net.minecraft.loot.LootTable;
+import net.minecraft.util.Identifier;
+import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.loading.FMLPaths;
@@ -25,5 +30,9 @@ public class EMILootExpectPlatformImpl {
 
     public static boolean isModLoaded(String id) {
         return ModList.get().isLoaded(id);
+    }
+
+    public static LootTable loadLootTable(Gson gson, Identifier id, JsonElement json) {
+        return ForgeHooks.loadLootTable(gson, id, json, true);
     }
 }

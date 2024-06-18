@@ -33,6 +33,6 @@ public class EMILootExpectPlatformImpl {
     }
 
     public static LootTable loadLootTable(Gson gson, Identifier id, JsonElement json) {
-        return ForgeHooks.loadLootTable(gson, id, json, true);
+        return ForgeHooks.loadLootTable(gson, id, json, true, null);
     }
 }

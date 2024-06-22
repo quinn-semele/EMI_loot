@@ -3,18 +3,11 @@ package fzzyhmstrs.emi_loot;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import fzzyhmstrs.emi_loot.parser.LootTableParser;
-import fzzyhmstrs.emi_loot.server.condition.BlownUpByCreeperLootCondition;
-import fzzyhmstrs.emi_loot.server.condition.KilledByWitherLootCondition;
-import fzzyhmstrs.emi_loot.server.condition.MobSpawnedWithLootCondition;
-import fzzyhmstrs.emi_loot.server.function.OminousBannerLootFunction;
-import fzzyhmstrs.emi_loot.server.function.SetAnyDamageLootFunction;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentTarget;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.loot.condition.LootConditionType;
-import net.minecraft.loot.condition.LootConditionTypes;
 import net.minecraft.loot.function.LootFunctionType;
-import net.minecraft.loot.function.LootFunctionTypes;
 import net.minecraft.util.math.random.LocalRandom;
 import net.minecraft.util.math.random.Random;
 import org.slf4j.Logger;
@@ -25,6 +18,7 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.util.Arrays;
+import java.util.function.Supplier;
 
 public class EMILoot {
 
@@ -37,11 +31,11 @@ public class EMILoot {
     public static boolean DEBUG = config.debugMode;
 
     //conditions & functions will be used in Lootify also, copying the identifier here so both mods can serialize the same conditions separately
-    public static LootConditionType WITHER_KILL;
-    public static LootConditionType SPAWNS_WITH;
-    public static LootConditionType CREEPER;
-    public static LootFunctionType SET_ANY_DAMAGE;
-    public static LootFunctionType OMINOUS_BANNER;
+    public static Supplier<LootConditionType> WITHER_KILL;
+    public static Supplier<LootConditionType> SPAWNS_WITH;
+    public static Supplier<LootConditionType> CREEPER;
+    public static Supplier<LootFunctionType> SET_ANY_DAMAGE;
+    public static Supplier<LootFunctionType> OMINOUS_BANNER;
 
     public static Enchantment RANDOM = new Enchantment(Enchantment.Rarity.VERY_RARE, EnchantmentTarget.TRIDENT, EquipmentSlot.values()){
         @Override
@@ -55,16 +49,6 @@ public class EMILoot {
     };
 
     public static void init() {
-    }
-
-    public static void register() {
-        //Registry.register(Registry.ENCHANTMENT,new Identifier(MOD_ID,"random"),RANDOM);
-
-        WITHER_KILL = LootConditionTypes.register("lootify:wither_kill", new KilledByWitherLootCondition.Serializer());
-        SPAWNS_WITH = LootConditionTypes.register("lootify:spawns_with", new MobSpawnedWithLootCondition.Serializer());
-        CREEPER = LootConditionTypes.register("lootify:creeper", new BlownUpByCreeperLootCondition.Serializer());
-        SET_ANY_DAMAGE = LootFunctionTypes.register("lootify:set_any_damage", new SetAnyDamageLootFunction.Serializer());
-        OMINOUS_BANNER = LootFunctionTypes.register("lootify:ominous_banner", new OminousBannerLootFunction.Serializer());
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")

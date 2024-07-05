@@ -3,6 +3,7 @@ package fzzyhmstrs.emi_loot;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import fzzyhmstrs.emi_loot.parser.LootTableParser;
+import lol.bai.badpackets.api.event.PacketSenderReadyCallback;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentTarget;
 import net.minecraft.entity.EquipmentSlot;
@@ -49,6 +50,9 @@ public class EMILoot {
     };
 
     public static void init() {
+        PacketSenderReadyCallback.registerServer((handler, sender, server) -> {
+            EMILoot.parser.registerServer(handler.player);
+        });
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")

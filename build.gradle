@@ -9,10 +9,6 @@ base {
 version = "${project.mod_version}+${project.minecraft_version}+neoforge"
 group = project.maven_group
 
-loom {
-    accessWidenerPath = file("src/main/resources/emi_loot.accesswidener")
-}
-
 repositories {
     maven {
         name = "NeoForged"

@@ -3,16 +3,18 @@ package fzzyhmstrs.emi_loot;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import fzzyhmstrs.emi_loot.parser.LootTableParser;
-import net.fabricmc.api.ModInitializer;
-import net.fabricmc.loader.api.FabricLoader;
+import lol.bai.badpackets.api.play.PlayPackets;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentTarget;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.random.LocalRandom;
 import net.minecraft.util.math.random.Random;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,9 +24,10 @@ import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 
-public class EMILoot implements ModInitializer {
+@Mod(EMILoot.MOD_ID)
+public class EMILoot {
 
-    public static String MOD_ID = "emi_loot";
+    public static final String MOD_ID = "emi_loot";
     public static final Logger LOGGER = LoggerFactory.getLogger("emi_loot");
     public static Random emiLootRandom = new LocalRandom(System.currentTimeMillis());
     public static LootTableParser parser = new LootTableParser();
@@ -41,26 +44,28 @@ public class EMILoot implements ModInitializer {
     public static LootFunctionType OMINOUS_BANNER = LootFunctionTypes.register("lootify:ominous_banner", new OminousBannerLootFunction.Serializer());
      */
 
-    public static Enchantment RANDOM = new Enchantment(Enchantment.Rarity.VERY_RARE, EnchantmentTarget.TRIDENT, EquipmentSlot.values()){
+    public static final DeferredRegister<Enchantment> ENCHANTMENTS = DeferredRegister.create(Registries.ENCHANTMENT, MOD_ID);
+
+    public static final DeferredHolder<Enchantment, Enchantment> RANDOM = ENCHANTMENTS.register("random", () -> new Enchantment(Enchantment.Rarity.VERY_RARE, EnchantmentTarget.TRIDENT, EquipmentSlot.values()){
         @Override
         public boolean isAvailableForEnchantedBookOffer() {
             return false;
         }
 
+        @Override
         public boolean isAvailableForRandomSelection() {
             return false;
         }
-    };
+    });
 
-    @Override
-    public void onInitialize() {
-        parser.registerServer();
-        Registry.register(Registries.ENCHANTMENT,new Identifier(MOD_ID,"random"),RANDOM);
+    public EMILoot(IEventBus modEventBus) {
+        ENCHANTMENTS.register(modEventBus);
+        PlayPackets.registerServerReadyCallback((handler, sender, server) -> LootTableParser.registerServer(handler.getPlayer()));
     }
     
     @SuppressWarnings("ResultOfMethodCallIgnored")
     private static EmiLootConfig readOrCreate(){
-        File dir = FabricLoader.getInstance().getConfigDir().toFile();
+        File dir = FMLPaths.CONFIGDIR.get().toFile();
         
         if (!dir.exists() && !dir.mkdirs()) {
             LOGGER.error("EMI Loot could not find or create config directory, using default configs");

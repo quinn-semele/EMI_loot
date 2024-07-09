@@ -1,7 +1,7 @@
 package fzzyhmstrs.emi_loot.server;
 
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import io.netty.buffer.Unpooled;
+import lol.bai.badpackets.api.PacketSender;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -45,15 +45,15 @@ public class ChestLootTableSender implements LootSender<ChestLootPoolBuilder> {
 
     @Override
     public void send(ServerPlayerEntity player) {
-        if (!ServerPlayNetworking.canSend(player,CHEST_SENDER)) return;
-        PacketByteBuf buf = PacketByteBufs.create();
+        if (!PacketSender.s2c(player).canSend(CHEST_SENDER)) return;
+        PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
         buf.writeString(idToSend);
         buf.writeShort(floatMap.size());
         floatMap.forEach((item, floatWeight) -> {
             buf.writeItemStack(item);
             buf.writeFloat(floatWeight);
         });
-        ServerPlayNetworking.send(player, CHEST_SENDER, buf);
+        PacketSender.s2c(player).send(CHEST_SENDER, buf);
 
     }
 

@@ -2,8 +2,8 @@ package fzzyhmstrs.emi_loot.server;
 
 import fzzyhmstrs.emi_loot.EMILoot;
 import fzzyhmstrs.emi_loot.util.TextKey;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import io.netty.buffer.Unpooled;
+import lol.bai.badpackets.api.PacketSender;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.Registries;
@@ -44,13 +44,13 @@ public class MobLootTableSender implements LootSender<MobLootPoolBuilder> {
 
     @Override
     public void send(ServerPlayerEntity player) {
-        if (!ServerPlayNetworking.canSend(player,MOB_SENDER)) return;
+        if (!PacketSender.s2c(player).canSend(MOB_SENDER)) return;
         //pre-build the builders to do empty checks
         if (isEmpty){
             if (EMILoot.DEBUG) EMILoot.LOGGER.info("avoiding empty mob: " + idToSend);
             return;
         }
-        PacketByteBuf buf = PacketByteBufs.create();
+        PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
         //start with the loot pool ID and the number of builders to write
         buf.writeString(idToSend);
         buf.writeString(mobIdToSend);
@@ -59,7 +59,7 @@ public class MobLootTableSender implements LootSender<MobLootPoolBuilder> {
             if (EMILoot.DEBUG) EMILoot.LOGGER.info("sending simple mob: " + idToSend);
             buf.writeShort(-1);
             buf.writeRegistryValue(Registries.ITEM, builderList.get(0).simpleStack.getItem());
-            ServerPlayNetworking.send(player, MOB_SENDER, buf);
+            PacketSender.s2c(player).send(MOB_SENDER, buf);
             return;
         } else if (builderList.isEmpty()){
             if (EMILoot.DEBUG) EMILoot.LOGGER.info("avoiding empty mob: " + idToSend);
@@ -101,7 +101,7 @@ public class MobLootTableSender implements LootSender<MobLootPoolBuilder> {
             });
 
         });
-        ServerPlayNetworking.send(player,MOB_SENDER, buf);
+        PacketSender.s2c(player).send(MOB_SENDER, buf);
     }
 
     @Override

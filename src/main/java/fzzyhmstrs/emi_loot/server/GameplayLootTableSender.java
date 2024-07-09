@@ -2,8 +2,8 @@ package fzzyhmstrs.emi_loot.server;
 
 import fzzyhmstrs.emi_loot.EMILoot;
 import fzzyhmstrs.emi_loot.util.TextKey;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import io.netty.buffer.Unpooled;
+import lol.bai.badpackets.api.PacketSender;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.Registries;
@@ -43,12 +43,12 @@ public class GameplayLootTableSender implements LootSender<GameplayLootPoolBuild
 
     @Override
     public void send(ServerPlayerEntity player) {
-        if (!ServerPlayNetworking.canSend(player,GAMEPLAY_SENDER)) return;
+        if (!PacketSender.s2c(player).canSend(GAMEPLAY_SENDER)) return;
         if (isEmpty){
             if (EMILoot.DEBUG) EMILoot.LOGGER.info("avoiding empty gameplay table: " + idToSend);
             return;
         }
-        PacketByteBuf buf = PacketByteBufs.create();
+        PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
         //start with the loot pool ID and the number of builders to write check a few special conditions to send compressed shortcut packets
         buf.writeString(idToSend);
 
@@ -56,7 +56,7 @@ public class GameplayLootTableSender implements LootSender<GameplayLootPoolBuild
             if (EMILoot.DEBUG) EMILoot.LOGGER.info("sending simple block: " + idToSend);
             buf.writeShort(-1);
             buf.writeRegistryValue(Registries.ITEM,builderList.get(0).simpleStack.getItem());
-            ServerPlayNetworking.send(player,GAMEPLAY_SENDER, buf);
+            PacketSender.s2c(player).send(GAMEPLAY_SENDER, buf);
             return;
         } else if (builderList.isEmpty()){
             return;
@@ -94,7 +94,7 @@ public class GameplayLootTableSender implements LootSender<GameplayLootPoolBuild
             });
 
         });
-        ServerPlayNetworking.send(player,GAMEPLAY_SENDER, buf);
+        PacketSender.s2c(player).send(GAMEPLAY_SENDER, buf);
     }
 
     @Override

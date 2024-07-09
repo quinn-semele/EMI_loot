@@ -8,37 +8,36 @@ import it.unimi.dsi.fastutil.objects.Object2FloatMap;
 import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
-import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.minecraft.entity.EntityType;
 import net.minecraft.registry.Registries;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.ResourceType;
+import net.minecraft.resource.SynchronousResourceReloader;
 import net.minecraft.util.Identifier;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 import org.joml.Vector3f;
 
 import java.io.BufferedReader;
 import java.util.HashMap;
 import java.util.Map;
 
+@Mod.EventBusSubscriber(modid = EMILoot.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ClientResourceData {
 
     public static final Object2IntMap<EntityType<?>> MOB_OFFSETS = new Object2IntOpenHashMap<>();
     public static final Object2FloatMap<EntityType<?>> MOB_SCALES = new Object2FloatOpenHashMap<>();
     public static final Map<EntityType<?>, Vector3f> MOB_ROTATIONS = new HashMap<>();
 
-    public static void register(){
-        ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(new EntityOffsetsReloadListener());
+    @SubscribeEvent
+    public static void registerClientReloadListeners(RegisterClientReloadListenersEvent event){
+        event.registerReloadListener(new EntityOffsetsReloadListener());
     }
 
 
-    private static class EntityOffsetsReloadListener implements SimpleSynchronousResourceReloadListener{
-
-        @Override
-        public Identifier getFabricId() {
-            return new Identifier(EMILoot.MOD_ID,"client_loot_resources");
-        }
+    private static class EntityOffsetsReloadListener implements SynchronousResourceReloader{
 
         @Override
         public void reload(ResourceManager manager) {

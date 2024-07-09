@@ -11,8 +11,6 @@ import fzzyhmstrs.emi_loot.EMILoot;
 import fzzyhmstrs.emi_loot.EMILootClient;
 import fzzyhmstrs.emi_loot.client.ClientArchaeologyLootTable;
 import fzzyhmstrs.emi_loot.util.LText;
-import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.Items;
 import net.minecraft.recipe.Ingredient;
@@ -20,6 +18,8 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.ModList;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -64,10 +64,10 @@ public class ArchaeologyLootRecipe implements EmiRecipe {
 		MutableText text = LText.translatable(key);
 		MutableText rawTitle;
 		if(Objects.equals(text.getString(), key)) {
-			Optional<ModContainer> modNameOpt = FabricLoader.getInstance().getModContainer(loot.id.getNamespace());
+			Optional<? extends ModContainer> modNameOpt = ModList.get().getModContainerById(loot.id.getNamespace());
 			if(modNameOpt.isPresent()) {
 				ModContainer modContainer = modNameOpt.get();
-				String modName = modContainer.getMetadata().getName();
+				String modName = modContainer.getModInfo().getDisplayName();
 				rawTitle = LText.translatable("emi_loot.archaeology.unknown_archaeology", modName);
 			} else {
 				Text unknown = LText.translatable("emi_loot.archaeology.unknown");

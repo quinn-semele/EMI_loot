@@ -1,10 +1,9 @@
 package fzzyhmstrs.emi_loot.server;
 
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
 
 import java.util.LinkedList;
 import java.util.List;
-
 
 public class EmptyLootTableSender implements LootSender<ChestLootPoolBuilder> {
 
@@ -14,7 +13,7 @@ public class EmptyLootTableSender implements LootSender<ChestLootPoolBuilder> {
     }
 
     @Override
-    public void send(ServerPlayerEntity player) {
+    public void send(ServerPlayer player) {
     }
 
     @Override

@@ -1,15 +1,15 @@
 package fzzyhmstrs.emi_loot.mixins;
 
-import net.minecraft.loot.function.SetStewEffectLootFunction;
+import net.minecraft.world.level.storage.loot.functions.SetStewEffectFunction;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
 import java.util.List;
 
-@Mixin(SetStewEffectLootFunction.class)
+@Mixin(SetStewEffectFunction.class)
 public interface SetStewEffectLootFunctionAccessor {
 
-    @Accessor(value = "stewEffects")
-    List<SetStewEffectLootFunction.StewEffect> getEffects();
+    @Accessor(value = "effects")
+    List<SetStewEffectFunction.EffectEntry> getEffects();
 
 }

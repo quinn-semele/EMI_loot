@@ -145,7 +145,7 @@ public record TextKey(int index, List<String> args){
         String translationKey = keyReverseMap.getOrDefault(index, "emi_loot.missing_key");
         String arg;
         try{
-            arg = key.args.get(0);
+            arg = key.args.getFirst();
         } catch(Exception e) {
             e.printStackTrace();
             arg = "Missing";
@@ -158,7 +158,7 @@ public record TextKey(int index, List<String> args){
         String arg1;
         String arg2;
         try{
-            arg1 = key.args.get(0);
+            arg1 = key.args.getFirst();
         } catch(Exception e) {
             e.printStackTrace();
             arg1 = "Missing";
@@ -194,7 +194,7 @@ public record TextKey(int index, List<String> args){
         String translationKey = keyReverseMap.getOrDefault(index, "emi_loot.missing_key");
         String arg;
         try{
-            arg = key.args.get(0);
+            arg = key.args.getFirst();
         } catch(Exception e) {
             e.printStackTrace();
             arg = "Missing";

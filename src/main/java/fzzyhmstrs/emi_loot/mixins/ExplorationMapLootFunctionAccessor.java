@@ -1,18 +1,18 @@
 package fzzyhmstrs.emi_loot.mixins;
 
-import net.minecraft.item.map.MapDecorationType;
-import net.minecraft.loot.function.ExplorationMapLootFunction;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.registry.tag.TagKey;
-import net.minecraft.world.gen.structure.Structure;
+import net.minecraft.core.Holder;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.level.levelgen.structure.Structure;
+import net.minecraft.world.level.saveddata.maps.MapDecorationType;
+import net.minecraft.world.level.storage.loot.functions.ExplorationMapFunction;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(ExplorationMapLootFunction.class)
+@Mixin(ExplorationMapFunction.class)
 public interface ExplorationMapLootFunctionAccessor {
 
-    @Accessor(value = "decoration")
-    RegistryEntry<MapDecorationType> getDecoration();
+    @Accessor(value = "mapDecoration")
+    Holder<MapDecorationType> getDecoration();
 
     @Accessor(value = "destination")
     TagKey<Structure> getDestination();

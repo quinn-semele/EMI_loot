@@ -1,15 +1,15 @@
 package fzzyhmstrs.emi_loot.mixins;
 
-import net.minecraft.loot.function.SetDamageLootFunction;
-import net.minecraft.loot.provider.number.LootNumberProvider;
+import net.minecraft.world.level.storage.loot.functions.SetItemDamageFunction;
+import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(SetDamageLootFunction.class)
+@Mixin(SetItemDamageFunction.class)
 public interface SetDamageLootFunctionAccessor {
 
-    @Accessor(value = "durabilityRange")
-    LootNumberProvider getDurabilityRange();
+    @Accessor(value = "damage")
+    NumberProvider getDurabilityRange();
 
     @Accessor(value = "add")
     boolean getAdd();

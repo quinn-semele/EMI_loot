@@ -1,15 +1,15 @@
 package fzzyhmstrs.emi_loot.mixins;
 
-import net.minecraft.loot.function.SetCountLootFunction;
-import net.minecraft.loot.provider.number.LootNumberProvider;
+import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction;
+import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(SetCountLootFunction.class)
+@Mixin(SetItemCountFunction.class)
 public interface SetCountLootFunctionAccessor {
 
-    @Accessor(value = "countRange")
-    LootNumberProvider getCountRange();
+    @Accessor(value = "value")
+    NumberProvider getCountRange();
 
     @Accessor(value = "add")
     boolean getAdd();

@@ -1,14 +1,14 @@
 package fzzyhmstrs.emi_loot.mixins;
 
-import net.minecraft.loot.function.LimitCountLootFunction;
-import net.minecraft.loot.operator.BoundedIntUnaryOperator;
+import net.minecraft.world.level.storage.loot.IntRange;
+import net.minecraft.world.level.storage.loot.functions.LimitCount;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(LimitCountLootFunction.class)
+@Mixin(LimitCount.class)
 public interface LimitCountLootFunctionAccessor {
 
-    @Accessor(value = "limit")
-    BoundedIntUnaryOperator getLimit();
+    @Accessor(value = "limiter")
+    IntRange getLimit();
 
 }

@@ -56,7 +56,7 @@ public class BlockLootPoolBuilder extends AbstractLootPoolBuilder {
     private boolean checkKey(List<TextKey> keys){
         if (keys.isEmpty()) return true;
         if (keys.size() != 1) return false;
-        return keys.get(0).index() == 0 || keys.get(0).index() == 150;
+        return keys.getFirst().index() == 0 || keys.getFirst().index() == 150;
     }
 
     @Override

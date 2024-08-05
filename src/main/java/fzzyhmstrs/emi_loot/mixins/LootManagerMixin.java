@@ -2,11 +2,9 @@ package fzzyhmstrs.emi_loot.mixins;
 
 import fzzyhmstrs.emi_loot.server.ServerResourceData;
 import fzzyhmstrs.emi_loot.util.LootManagerConditionManager;
-import net.minecraft.loot.LootDataKey;
-import net.minecraft.loot.LootManager;
-import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.ResourceReloader;
-import net.minecraft.util.profiler.Profiler;
+import net.minecraft.server.packs.resources.PreparableReloadListener;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.util.profiling.ProfilerFiller;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -17,15 +15,15 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
-@Mixin(value = LootManager.class, priority = 10000)
+@Mixin(value = LootDataManager.class, priority = 10000)
 public class LootManagerMixin implements LootManagerConditionManager {
 
     @Shadow
-    private Map<LootDataKey<?>, ?> keyToValue;
+    private Map<LootDataId<?>, ?> keyToValue;
 
 
     @Inject(method = "reload(Lnet/minecraft/resource/ResourceReloader$Synchronizer;Lnet/minecraft/resource/ResourceManager;Lnet/minecraft/util/profiler/Profiler;Lnet/minecraft/util/profiler/Profiler;Ljava/util/concurrent/Executor;Ljava/util/concurrent/Executor;)Ljava/util/concurrent/CompletableFuture;", at = @At("HEAD"))
-    private void emi_loot_loadDirectTables(ResourceReloader.Synchronizer synchronizer, ResourceManager manager, Profiler prepareProfiler, Profiler applyProfiler, Executor prepareExecutor, Executor applyExecutor, CallbackInfoReturnable<CompletableFuture<Void>> cir) {
+    private void emi_loot_loadDirectTables(PreparableReloadListener.PreparationBarrier synchronizer, ResourceManager manager, ProfilerFiller prepareProfiler, ProfilerFiller applyProfiler, Executor prepareExecutor, Executor applyExecutor, CallbackInfoReturnable<CompletableFuture<Void>> cir) {
         ServerResourceData.loadDirectTables(manager);
     }
 
@@ -35,7 +33,7 @@ public class LootManagerMixin implements LootManagerConditionManager {
     }*/
 
     @Override
-    public Map<LootDataKey<?>, ?> getKeysToValues() {
+    public Map<LootDataId<?>, ?> getKeysToValues() {
         return keyToValue;
     }
 }

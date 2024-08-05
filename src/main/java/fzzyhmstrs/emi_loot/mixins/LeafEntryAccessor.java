@@ -1,18 +1,18 @@
 package fzzyhmstrs.emi_loot.mixins;
 
-import net.minecraft.loot.entry.LeafEntry;
-import net.minecraft.loot.function.LootFunction;
+import net.minecraft.world.level.storage.loot.entries.LootPoolSingletonContainer;
+import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
 import java.util.List;
 
-@Mixin(LeafEntry.class)
+@Mixin(LootPoolSingletonContainer.class)
 public interface LeafEntryAccessor {
 
     @Accessor(value = "weight")
     int getWeight();
 
     @Accessor(value = "functions")
-    List<LootFunction> getFunctions();
+    List<LootItemFunction> getFunctions();
 }

@@ -49,14 +49,14 @@ public class BlockLootTableSender implements LootSender<BlockLootPoolBuilder> {
             if (EMILoot.DEBUG) EMILoot.LOGGER.info("avoiding empty block: " + idToSend);
             return;
         }
-        RegistryFriendlyByteBuf buf = new RegistryFriendlyByteBuf(Unpooled.buffer(), player.server.getRegistryManager(), ConnectionType.NEOFORGE);
+        RegistryFriendlyByteBuf buf = new RegistryFriendlyByteBuf(Unpooled.buffer(), player.server.registryAccess(), ConnectionType.NEOFORGE);
         //start with the loot pool ID and the number of builders to write check a few special conditions to send compressed shortcut packets
         buf.writeUtf(idToSend);
         //pre-build the builders to do empty checks
-        if (builderList.size() == 1 && builderList.get(0).isSimple){
+        if (builderList.size() == 1 && builderList.getFirst().isSimple){
             if (EMILoot.DEBUG) EMILoot.LOGGER.info("sending simple block: " + idToSend);
             buf.writeShort(-1);
-            ItemStack.STREAM_CODEC.encode(buf, builderList.get(0).simpleStack);
+            ItemStack.STREAM_CODEC.encode(buf, builderList.getFirst().simpleStack);
             PacketSender.s2c(player).send(BLOCK_SENDER, buf);
             return;
         } else if (builderList.isEmpty()){

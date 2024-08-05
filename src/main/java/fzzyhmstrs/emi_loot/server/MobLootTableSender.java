@@ -57,10 +57,10 @@ public class MobLootTableSender implements LootSender<MobLootPoolBuilder> {
         buf.writeString(idToSend);
         buf.writeString(mobIdToSend);
 
-        if (builderList.size() == 1 && builderList.get(0).isSimple) {
+        if (builderList.size() == 1 && builderList.getFirst().isSimple) {
             if (EMILoot.DEBUG) EMILoot.LOGGER.info("sending simple mob: " + idToSend);
             buf.writeShort(-1);
-            ItemStack.PACKET_CODEC.encode(buf, builderList.get(0).simpleStack);
+            ItemStack.PACKET_CODEC.encode(buf, builderList.getFirst().simpleStack);
             PacketSender.s2c(player).send(MOB_SENDER, buf);
             return;
         } else if (builderList.isEmpty()){

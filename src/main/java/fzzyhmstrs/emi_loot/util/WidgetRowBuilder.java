@@ -94,7 +94,7 @@ public class WidgetRowBuilder {
             }
         }
         if (!collateMap.isEmpty()){
-            Int2IntMap.Entry start = collateMap.int2IntEntrySet().stream().toList().get(0);
+            collateMap.int2IntEntrySet().stream().toList().getFirst();
         }
     }
 

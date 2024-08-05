@@ -1,15 +1,15 @@
 package fzzyhmstrs.emi_loot.mixins;
 
-import net.minecraft.loot.function.SetPotionLootFunction;
-import net.minecraft.potion.Potion;
-import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.core.Holder;
+import net.minecraft.world.item.alchemy.Potion;
+import net.minecraft.world.level.storage.loot.functions.SetPotionFunction;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(SetPotionLootFunction.class)
+@Mixin(SetPotionFunction.class)
 public interface SetPotionLootFunctionAccessor {
 
     @Accessor(value = "potion")
-    RegistryEntry<Potion> getPotion();
+    Holder<Potion> getPotion();
 
 }

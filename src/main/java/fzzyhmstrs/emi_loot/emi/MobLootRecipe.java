@@ -151,7 +151,7 @@ public class MobLootRecipe implements EmiRecipe {
 
     @Override
     public int getDisplayHeight() {
-        if (rowBuilderList.size() > 1 || rowBuilderList.get(0).getWidth() > 94) {
+        if (rowBuilderList.size() > 1 || rowBuilderList.getFirst().getWidth() > 94) {
             return 28 + 23 + 29 * (rowBuilderList.size() - 1);
         } else {
             return 34;
@@ -172,11 +172,11 @@ public class MobLootRecipe implements EmiRecipe {
             widgets.addDrawable(x,y,16,16,(matrices,mx,my,delta)->inputStack.render(matrices,5, 6 + offset,delta));
         }
         widgets.addText(name.asOrderedText(),30,0,0x404040,false);
-        if (rowBuilderList.size() == 1 && rowBuilderList.get(0).getWidth() <= 94){
+        if (rowBuilderList.size() == 1 && rowBuilderList.getFirst().getWidth() <= 94){
             widgets.addTexture(new EmiTexture(ARROW_ID, 0, 16, 39, 15, 39, 15, 64, 32), 30, 10);
             x = 60;
             y = 11;
-            WidgetRowBuilder builder = rowBuilderList.get(0);
+            WidgetRowBuilder builder = rowBuilderList.getFirst();
             for (ClientBuiltPool pool: builder.getPoolList()){
                 IconGroupEmiWidget widget = new IconGroupEmiWidget(x,y,pool);
                 widgets.add(widget);

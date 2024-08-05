@@ -59,6 +59,10 @@ tasks.withType(JavaCompile).configureEach {
     it.options.release = 21
 }
 
+tasks.remapJar {
+    atAccessWideners.add(loom.accessWidenerPath.get().asFile.absolutePath)
+}
+
 java {
     withSourcesJar()
 

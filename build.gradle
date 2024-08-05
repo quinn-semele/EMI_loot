@@ -1,23 +1,57 @@
 plugins {
-    id "dev.architectury.loom" version "1.7-SNAPSHOT"
+    id 'java-library'
+    id 'net.neoforged.moddev' version '1.0.14'
+}
+
+tasks.named('wrapper', Wrapper).configure {
+    distributionType = Wrapper.DistributionType.BIN
+}
+
+version = "${project.mod_version}+${project.minecraft_version}+neoforge"
+group = project.maven_group
+
+repositories {
+    mavenLocal()
 }
 
 base {
     archivesName = project.archives_base_name
 }
 
-version = "${project.mod_version}+${project.minecraft_version}+neoforge"
-group = project.maven_group
+// Mojang ships Java 21 to end users starting in 1.20.5, so mods should target Java 21.
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
-loom {
-    accessWidenerPath = file("src/main/resources/emi_loot.accesswidener")
+neoForge {
+    // Specify the version of NeoForge to use.
+    version = project.neoforge_version
+
+    parchment {
+        mappingsVersion = project.parchment_mappings_version
+        minecraftVersion = project.parchment_minecraft_version
+    }
+
+    runs {
+        client {
+            client()
+        }
+
+        configureEach {
+            logLevel = org.slf4j.event.Level.INFO
+        }
+    }
+
+    mods {
+        "${mod_id}" {
+            sourceSet(sourceSets.main)
+        }
+    }
+}
+
+configurations {
+    runtimeClasspath.extendsFrom localRuntime
 }
 
 repositories {
-    maven {
-        name = "NeoForged"
-        url = "https://maven.neoforged.net/releases/"
-    }
     maven {
         name = "TerraformersMC"
         url = "https://maven.terraformersmc.com/"
@@ -35,53 +69,34 @@ repositories {
 }
 
 dependencies {
-    minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings loom.layered {
-        mappings "net.fabricmc:yarn:${rootProject.yarn_mappings}:v2"
-        mappings "dev.architectury:yarn-mappings-patch-neoforge:1.21+build.4"
-    }
-    neoForge "net.neoforged:neoforge:${project.neoforge_version}"
-
-    modImplementation "dev.emi:emi-neoforge:${project.emi_version}"
-    modImplementation "lol.bai:badpackets:neo-${project.badpackets_version}"
+    implementation "dev.emi:emi-neoforge:${project.emi_version}"
+    implementation "lol.bai:badpackets:neo-${project.badpackets_version}"
 }
 
-processResources {
-    inputs.property "version", project.version
-
-    filesMatching("META-INF/mods.toml") {
-        expand "version": project.version
-    }
+var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
+    var replaceProperties = [
+            minecraft_version_range: project.minecraft_version_range,
+            neo_version_range      : project.neo_version_range,
+            loader_version_range   : project.loader_version_range,
+            mod_version            : version,
+    ]
+    inputs.properties replaceProperties
+    expand replaceProperties
+    from "src/main/templates"
+    into "build/generated/sources/modMetadata"
 }
+
+sourceSets.main.resources.srcDir generateModMetadata
+neoForge.ideSyncTask generateModMetadata
 
 tasks.withType(JavaCompile).configureEach {
-    it.options.encoding = "UTF-8"
-    it.options.release = 21
+    options.encoding = 'UTF-8'
+    options.release = 21
 }
 
-tasks.remapJar {
-    atAccessWideners.add(loom.accessWidenerPath.get().asFile.absolutePath)
-}
-
-java {
-    withSourcesJar()
-
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
-}
-
-jar {
-    exclude "emi_loot.accesswidener"
-
-    manifest {
-        attributes([
-                "Specification-Title"     : project.mod_id,
-                "Specification-Vendor"    : project.mod_author,
-                "Specification-Version"   : "1",
-                "Implementation-Title"    : project.name,
-                "Implementation-Version"  : version,
-                "Implementation-Vendor"   : project.mod_author,
-                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
-        ])
+idea {
+    module {
+        downloadSources = true
+        downloadJavadoc = true
     }
 }

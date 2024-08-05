@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[2,)"
+loaderVersion="${loader_version_range}"
 license="MIT"
 
 [[mods]]
@@ -18,13 +18,13 @@ config="emi_loot.mixins.json"
 [[dependencies.emi_loot]]
     modId="neoforge"
     type="required"
-    versionRange="[20.3,)"
+    versionRange="${neo_version_range}"
     ordering="NONE"
     side="BOTH"
 
 [[dependencies.emi_loot]]
     modId="minecraft"
     type="required"
-    versionRange="[1.20.3,)"
+    versionRange="${minecraft_version_range}"
     ordering="NONE"
     side="BOTH"

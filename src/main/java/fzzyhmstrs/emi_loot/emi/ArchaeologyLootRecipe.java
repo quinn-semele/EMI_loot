@@ -10,15 +10,15 @@ import dev.emi.emi.api.widget.WidgetHolder;
 import fzzyhmstrs.emi_loot.EMILoot;
 import fzzyhmstrs.emi_loot.EMILootClient;
 import fzzyhmstrs.emi_loot.client.ClientArchaeologyLootTable;
+import fzzyhmstrs.emi_loot.util.cleancode.Identifier;
 import fzzyhmstrs.emi_loot.util.cleancode.Text;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.item.Items;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.recipe.Ingredient;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import org.jetbrains.annotations.Nullable;
@@ -34,7 +34,7 @@ public class ArchaeologyLootRecipe implements EmiRecipe {
 	private final int lootStacksSortedSize;
 	private final List<EmiStack> outputs;
 	private boolean isGuaranteedNonChance = false;
-	private final Text title;
+	private final Component title;
 	private final float columns = 8f;
 
 	public ArchaeologyLootRecipe(ClientArchaeologyLootTable loot) {
@@ -63,7 +63,7 @@ public class ArchaeologyLootRecipe implements EmiRecipe {
 		outputs = outputsList;
 		String key = "emi_loot.archaeology." + loot.id.toString();
 		MutableComponent text = Text.translatable(key);
-		MutableText rawTitle;
+		MutableComponent rawTitle;
 		if(Objects.equals(text.getString(), key)) {
 			Optional<? extends ModContainer> modNameOpt = ModList.get().getModContainerById(loot.id.getNamespace());
 			if(modNameOpt.isPresent()) {
@@ -71,17 +71,17 @@ public class ArchaeologyLootRecipe implements EmiRecipe {
 				String modName = modContainer.getModInfo().getDisplayName();
 				rawTitle = Text.translatable("emi_loot.archaeology.unknown_archaeology", modName);
 			} else {
-				Text unknown = Text.translatable("emi_loot.archaeology.unknown");
+				Component unknown = Text.translatable("emi_loot.archaeology.unknown");
 				rawTitle = Text.translatable("emi_loot.archaeology.unknown_archaeology", unknown.getString());
 			}
 		} else {
 			rawTitle = text;
 		}
 
-		Text dots = Text.literal("...");
-		int dotsWidth = MinecraftClient.getInstance().textRenderer.getWidth(dots);
-		if(MinecraftClient.getInstance().textRenderer.getWidth(rawTitle) > 138 - dotsWidth) {
-			String trimmed = MinecraftClient.getInstance().textRenderer.trimToWidth(rawTitle.getString(), 138 - dotsWidth) + "...";
+		Component dots = Text.literal("...");
+		int dotsWidth = Minecraft.getInstance().font.width(dots);
+		if(Minecraft.getInstance().font.width(rawTitle) > 138 - dotsWidth) {
+			String trimmed = Minecraft.getInstance().font.plainSubstrByWidth(rawTitle.getString(), 138 - dotsWidth) + "...";
 			title = Text.literal(trimmed);
 		} else {
 			title = rawTitle;
@@ -96,14 +96,14 @@ public class ArchaeologyLootRecipe implements EmiRecipe {
 	}
 
 	@Override
-	public @Nullable Identifier getId() {
+	public @Nullable ResourceLocation getId() {
 		return Identifier.of(EMILootClient.MOD_ID, "/" + getCategory().id.getPath() + "/" + loot.id.getNamespace() + "/" + loot.id.getPath());
 	}
 
 	@Override
 	public List<EmiIngredient> getInputs() {
-		EmiIngredient sand = EmiIngredient.of(Ingredient.ofItems(Items.SUSPICIOUS_SAND, Items.SUSPICIOUS_GRAVEL));
-		EmiIngredient brush = EmiIngredient.of(Ingredient.ofItems(Items.BRUSH));
+		EmiIngredient sand = EmiIngredient.of(Ingredient.of(Items.SUSPICIOUS_SAND, Items.SUSPICIOUS_GRAVEL));
+		EmiIngredient brush = EmiIngredient.of(Ingredient.of(Items.BRUSH));
 		return Arrays.asList(sand, brush);
 	}
 
@@ -136,7 +136,7 @@ public class ArchaeologyLootRecipe implements EmiRecipe {
 			finalRowHeight = 18;
 		}
 
-		widgets.addText(title.asOrderedText(), 1, 0, 0x404040, false);
+		widgets.addText(title.getVisualOrderText(), 1, 0, 0x404040, false);
 		AtomicInteger index = new AtomicInteger(lootStacksSortedSize);
 		for (var entry : lootStacksSorted.asMap().entrySet()) {
 			float weight = entry.getKey();
@@ -157,7 +157,7 @@ public class ArchaeologyLootRecipe implements EmiRecipe {
 				EmiIngredient ingredient = EmiIngredient.of(items.stream().toList());
 				String fTrim = trimFloatString(Math.max(weight / 100f, 0.01f), 2);
 				SlotWidget slotWidget = new SlotWidget(ingredient, column * 18, titleSpace + row * finalRowHeight).recipeContext(this);
-				widgets.add(slotWidget.appendTooltip(Text.translatable("emi_loot.rolls", fTrim).formatted(Formatting.ITALIC, Formatting.GOLD)));
+				widgets.add(slotWidget.appendTooltip(Text.translatable("emi_loot.rolls", fTrim).withStyle(ChatFormatting.ITALIC, ChatFormatting.GOLD)));
 			}
 		}
 	}

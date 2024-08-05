@@ -8,35 +8,36 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import fzzyhmstrs.emi_loot.EMILoot;
-import net.minecraft.loot.LootTable;
-import net.minecraft.loot.LootTables;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.resource.Resource;
-import net.minecraft.resource.ResourceManager;
-import net.minecraft.util.Identifier;
+import fzzyhmstrs.emi_loot.util.cleancode.Identifier;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.world.level.storage.loot.BuiltInLootTables;
+import net.minecraft.world.level.storage.loot.LootTable;
 
 import java.io.BufferedReader;
 import java.util.*;
 
 public class ServerResourceData {
 
-    public static final Multimap<Identifier, LootTable> DIRECT_DROPS = Multimaps.newMultimap(Maps.newLinkedHashMap(), ArrayList::new);
-    public static final List<RegistryKey<LootTable>> SHEEP_TABLES;
-    public static final List<Identifier> TABLE_EXCLUSIONS = new LinkedList<>();
+    public static final Multimap<ResourceLocation, LootTable> DIRECT_DROPS = Multimaps.newMultimap(Maps.newLinkedHashMap(), ArrayList::new);
+    public static final List<ResourceKey<LootTable>> SHEEP_TABLES;
+    public static final List<ResourceLocation> TABLE_EXCLUSIONS = new LinkedList<>();
     private static final Gson GSON = new Gson();
     private static final int DIRECT_DROPS_PATH_LENGTH = "direct_drops/".length();
     private static final int FILE_SUFFIX_LENGTH = ".json".length();
 
     public static void loadDirectTables(ResourceManager resourceManager){
         DIRECT_DROPS.clear();
-        resourceManager.findResources("direct_drops",path -> path.getPath().endsWith(".json")).forEach(ServerResourceData::loadDirectTable);
-        resourceManager.findResources("emi_loot_data",path -> path.getPath().endsWith(".json")).forEach(ServerResourceData::loadTableExclusion);
+        resourceManager.listResources("direct_drops",path -> path.getPath().endsWith(".json")).forEach(ServerResourceData::loadDirectTable);
+        resourceManager.listResources("emi_loot_data",path -> path.getPath().endsWith(".json")).forEach(ServerResourceData::loadTableExclusion);
     }
 
-    private static void loadDirectTable(Identifier id, Resource resource){
+    private static void loadDirectTable(ResourceLocation id, Resource resource){
         if (EMILoot.DEBUG) EMILoot.LOGGER.info("Reading direct drop table from file: " + id.toString());
         String path = id.getPath();
-        Identifier id2 = Identifier.of(id.getNamespace(), path.substring(DIRECT_DROPS_PATH_LENGTH, path.length() - FILE_SUFFIX_LENGTH));
+        ResourceLocation id2 = Identifier.of(id.getNamespace(), path.substring(DIRECT_DROPS_PATH_LENGTH, path.length() - FILE_SUFFIX_LENGTH));
         String path2 = id2.getPath();
         if (!(path2.startsWith("blocks/") || path2.startsWith("entities/"))){
             EMILoot.LOGGER.error("File path for [" + id + "] not correct; needs a 'blocks' or 'entities' subfolder. Skipping.");
@@ -44,7 +45,7 @@ public class ServerResourceData {
             return;
         }
         try {
-            BufferedReader reader = resource.getReader();
+            BufferedReader reader = resource.openAsReader();
             JsonObject json = JsonParser.parseReader(reader).getAsJsonObject();
             LootTable lootTable = GSON.fromJson(json, LootTable.class);
             if (lootTable != null) {
@@ -57,16 +58,16 @@ public class ServerResourceData {
         }
     }
 
-    private static void loadTableExclusion(Identifier id, Resource resource){
+    private static void loadTableExclusion(ResourceLocation id, Resource resource){
         if (EMILoot.DEBUG) EMILoot.LOGGER.info("Reading exclusion table from file: " + id.toString());
         try {
-            BufferedReader reader = resource.getReader();
+            BufferedReader reader = resource.openAsReader();
             JsonObject json = JsonParser.parseReader(reader).getAsJsonObject();
             JsonElement list = json.get("exclusions");
             if (list != null && list.isJsonArray()){
                 list.getAsJsonArray().forEach(element -> {
                     if (element.isJsonPrimitive()){
-                        Identifier identifier = Identifier.of(element.getAsString());
+                        ResourceLocation identifier = Identifier.of(element.getAsString());
                         if (EMILoot.DEBUG) EMILoot.LOGGER.info("Adding exclusion: " + identifier);
                         TABLE_EXCLUSIONS.add(identifier);
                     } else {
@@ -81,13 +82,13 @@ public class ServerResourceData {
         }
     }
 
-    public static boolean skipTable(Identifier id){
+    public static boolean skipTable(ResourceLocation id){
         return TABLE_EXCLUSIONS.contains(id);
     }
 
-    public static Multimap<Identifier, LootTable> getMissedDirectDrops(List<Identifier> parsedList){
-        Multimap<Identifier, LootTable> missedDrops = Multimaps.newMultimap(Maps.newLinkedHashMap(), ArrayList::new);
-        for (Map.Entry<Identifier,LootTable> entry : DIRECT_DROPS.entries()){
+    public static Multimap<ResourceLocation, LootTable> getMissedDirectDrops(List<Identifier> parsedList){
+        Multimap<ResourceLocation, LootTable> missedDrops = Multimaps.newMultimap(Maps.newLinkedHashMap(), ArrayList::new);
+        for (Map.Entry<ResourceLocation,LootTable> entry : DIRECT_DROPS.entries()){
             if (!parsedList.contains(entry.getKey())){
                 missedDrops.put(entry.getKey(),entry.getValue());
             }
@@ -97,22 +98,22 @@ public class ServerResourceData {
 
     static{
         SHEEP_TABLES = List.of(
-                LootTables.WHITE_SHEEP_ENTITY,
-                LootTables.ORANGE_SHEEP_ENTITY,
-                LootTables.MAGENTA_SHEEP_ENTITY,
-                LootTables.LIGHT_BLUE_SHEEP_ENTITY,
-                LootTables.YELLOW_SHEEP_ENTITY,
-                LootTables.LIME_SHEEP_ENTITY,
-                LootTables.PINK_SHEEP_ENTITY,
-                LootTables.GRAY_SHEEP_ENTITY,
-                LootTables.LIGHT_GRAY_SHEEP_ENTITY,
-                LootTables.CYAN_SHEEP_ENTITY,
-                LootTables.PURPLE_SHEEP_ENTITY,
-                LootTables.BLUE_SHEEP_ENTITY,
-                LootTables.BROWN_SHEEP_ENTITY,
-                LootTables.GREEN_SHEEP_ENTITY,
-                LootTables.RED_SHEEP_ENTITY,
-                LootTables.BLACK_SHEEP_ENTITY
+                BuiltInLootTables.SHEEP_WHITE,
+                BuiltInLootTables.SHEEP_ORANGE,
+                BuiltInLootTables.SHEEP_MAGENTA,
+                BuiltInLootTables.SHEEP_LIGHT_BLUE,
+                BuiltInLootTables.SHEEP_YELLOW,
+                BuiltInLootTables.SHEEP_LIME,
+                BuiltInLootTables.SHEEP_PINK,
+                BuiltInLootTables.SHEEP_GRAY,
+                BuiltInLootTables.SHEEP_LIGHT_GRAY,
+                BuiltInLootTables.SHEEP_CYAN,
+                BuiltInLootTables.SHEEP_PURPLE,
+                BuiltInLootTables.SHEEP_BLUE,
+                BuiltInLootTables.SHEEP_BROWN,
+                BuiltInLootTables.SHEEP_GREEN,
+                BuiltInLootTables.SHEEP_RED,
+                BuiltInLootTables.SHEEP_BLACK
         );
     }
 }

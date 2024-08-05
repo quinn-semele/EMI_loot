@@ -43,7 +43,7 @@ public class AlternativesConditionParser implements ConditionParser{
             List<String> args = new LinkedList<>();
             terms.forEach((term)-> {
                 List<LootTableParser.LootConditionResult> termResults = LootTableParser.parseLootCondition(term, stack);
-                Text termText = LootTableParser.compileConditionTexts(stack,termResults);
+                Component termText = LootTableParser.compileConditionTexts(stack,termResults);
                 args.add(termText.getString());
             });
             return Collections.singletonList(new LootTableParser.LootConditionResult(TextKey.of("emi_loot.condition.alternates_3",args)));

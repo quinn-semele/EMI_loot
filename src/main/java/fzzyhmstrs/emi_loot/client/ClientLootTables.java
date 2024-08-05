@@ -3,6 +3,7 @@ package fzzyhmstrs.emi_loot.client;
 import fzzyhmstrs.emi_loot.EMILoot;
 import fzzyhmstrs.emi_loot.parser.LootTableParser;
 import lol.bai.badpackets.api.play.PlayPackets;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.common.NeoForge;
 
@@ -26,36 +27,36 @@ public class ClientLootTables {
         
         NeoForge.EVENT_BUS.addListener(this::loggingOut);
 
-        PlayPackets.registerClientReceiver(LootTableParser.CLEAR_LOOTS, (minecraftClient, playNetworkHandler, buf, sender) ->
-                loots.clear()
-        );
-        
-        PlayPackets.registerClientReceiver(CHEST_SENDER,(minecraftClient, playNetworkHandler, buf, sender)-> {
-            LootReceiver table = ClientChestLootTable.INSTANCE.fromBuf(buf);
+        PlayPackets.registerClientReceiver(LootTableParser.CLEAR_LOOTS, (context, payload) -> {
+            loots.clear();
+        });
+
+        PlayPackets.registerClientReceiver(CHEST_SENDER, (context, payload) -> {
+            LootReceiver table = ClientChestLootTable.INSTANCE.fromBuf((RegistryFriendlyByteBuf) payload);
             loots.add(table);
             if (EMILoot.DEBUG) EMILoot.LOGGER.info("received chest " + table.getId());
         });
-        
-        PlayPackets.registerClientReceiver(BLOCK_SENDER,(minecraftClient, playNetworkHandler, buf, sender)-> {
-            LootReceiver table = ClientBlockLootTable.INSTANCE.fromBuf(buf);
+
+        PlayPackets.registerClientReceiver(BLOCK_SENDER, (context, payload) -> {
+            LootReceiver table = ClientBlockLootTable.INSTANCE.fromBuf((RegistryFriendlyByteBuf) payload);
             loots.add(table);
             if (EMILoot.DEBUG) EMILoot.LOGGER.info("received block " + table.getId());
         });
-        
-        PlayPackets.registerClientReceiver(MOB_SENDER,(minecraftClient, playNetworkHandler, buf, sender)-> {
-            LootReceiver table = ClientMobLootTable.INSTANCE.fromBuf(buf);
+
+        PlayPackets.registerClientReceiver(MOB_SENDER, (context, payload) -> {
+            LootReceiver table = ClientMobLootTable.INSTANCE.fromBuf((RegistryFriendlyByteBuf) payload);
             loots.add(table);
             if (EMILoot.DEBUG) EMILoot.LOGGER.info("received mob " + table.getId());
         });
-        
-        PlayPackets.registerClientReceiver(GAMEPLAY_SENDER,(minecraftClient, playNetworkHandler, buf, sender)-> {
-            LootReceiver table = ClientGameplayLootTable.INSTANCE.fromBuf(buf);
+
+        PlayPackets.registerClientReceiver(GAMEPLAY_SENDER, (context, payload) -> {
+            LootReceiver table = ClientGameplayLootTable.INSTANCE.fromBuf((RegistryFriendlyByteBuf) payload);
             loots.add(table);
             if (EMILoot.DEBUG) EMILoot.LOGGER.info("received gameplay loot: " + table.getId());
         });
 
-        PlayPackets.registerClientReceiver(ARCHAEOLOGY_SENDER, (minecraftClient, playNetworkHandler, buf, sender) -> {
-            LootReceiver table = ClientArchaeologyLootTable.INSTANCE.fromBuf(buf);
+        PlayPackets.registerClientReceiver(ARCHAEOLOGY_SENDER, (context, payload) -> {
+            LootReceiver table = ClientArchaeologyLootTable.INSTANCE.fromBuf((RegistryFriendlyByteBuf) payload);
             loots.add(table);
             if (EMILoot.DEBUG) EMILoot.LOGGER.info("received archaeology loot: " + table.getId());
         });

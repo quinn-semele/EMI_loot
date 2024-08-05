@@ -1,26 +1,27 @@
 package fzzyhmstrs.emi_loot.client;
 
 import fzzyhmstrs.emi_loot.util.TextKey;
+import fzzyhmstrs.emi_loot.util.cleancode.Identifier;
 import it.unimi.dsi.fastutil.objects.Object2FloatMap;
 import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
-import net.minecraft.block.Block;
-import net.minecraft.entity.EntityType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.registry.Registries;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.Pair;
-import net.minecraft.world.World;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Tuple;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 
 import java.util.*;
 
 public class ClientMobLootTable extends AbstractTextKeyParsingClientLootTable<ClientMobLootTable> {
 
     public static ClientMobLootTable INSTANCE = new ClientMobLootTable();
-    private static final Identifier EMPTY = Identifier.of("entity/empty");
-    public final Identifier id;
-    public final Identifier mobId;
+    private static final ResourceLocation EMPTY = Identifier.of("entity/empty");
+    public final ResourceLocation id;
+    public final ResourceLocation mobId;
     public String color = "";
 
     public ClientMobLootTable(){
@@ -29,15 +30,15 @@ public class ClientMobLootTable extends AbstractTextKeyParsingClientLootTable<Cl
         this.mobId = Identifier.of("empty");
     }
 
-    public ClientMobLootTable(Identifier id,Identifier mobId, Map<List<TextKey>, ClientRawPool> map){
+    public ClientMobLootTable(ResourceLocation id,ResourceLocation mobId, Map<List<TextKey>, ClientRawPool> map){
         super(map);
         this.id = id;
         String ns = id.getNamespace();
         String pth = id.getPath();
-        if (!Registries.ENTITY_TYPE.containsId(mobId)) {
+        if (!BuiltInRegistries.ENTITY_TYPE.containsKey(mobId)) {
             this.mobId = Identifier.of("empty");
         } else {
-            if (Objects.equals(mobId, Registries.ENTITY_TYPE.getId(EntityType.SHEEP))) {
+            if (Objects.equals(mobId, BuiltInRegistries.ENTITY_TYPE.getKey(EntityType.SHEEP))) {
                 int lastSlashIndex = pth.lastIndexOf('/');
                 if (lastSlashIndex != -1) {
                     this.color = pth.substring(Math.min(lastSlashIndex + 1, pth.length()));
@@ -48,7 +49,7 @@ public class ClientMobLootTable extends AbstractTextKeyParsingClientLootTable<Cl
     }
 
     @Override
-    public Identifier getId() {
+    public ResourceLocation getId() {
         return id;
     }
 
@@ -58,27 +59,27 @@ public class ClientMobLootTable extends AbstractTextKeyParsingClientLootTable<Cl
     }
 
     @Override
-    List<Pair<Integer, Text>> getSpecialTextKeyList(World world, Block block) {
+    List<Tuple<Integer, Component>> getSpecialTextKeyList(Level world, Block block) {
         return List.of();
     }
 
     @Override
-    Pair<Identifier,Identifier> getBufId(PacketByteBuf buf) {
-        Identifier id = getIdFromBuf(buf);
-        Identifier mobId = getIdFromBuf(buf);
-        return new Pair<>(id,mobId);
+    Tuple<ResourceLocation,ResourceLocation> getBufId(RegistryFriendlyByteBuf buf) {
+        ResourceLocation id = getIdFromBuf(buf);
+        ResourceLocation mobId = getIdFromBuf(buf);
+        return new Tuple<>(id,mobId);
     }
 
     @Override
-    ClientMobLootTable simpleTableToReturn(Pair<Identifier,Identifier> ids,PacketByteBuf buf) {
+    ClientMobLootTable simpleTableToReturn(Tuple<ResourceLocation,ResourceLocation> ids,RegistryFriendlyByteBuf buf) {
         ClientRawPool simplePool = new ClientRawPool(new HashMap<>());
         Object2FloatMap<ItemStack> simpleMap = new Object2FloatOpenHashMap<>();
-        ItemStack simpleStack = new ItemStack(buf.readRegistryValue(Registries.ITEM));
+        ItemStack simpleStack = new ItemStack(buf.readById(BuiltInRegistries.ITEM::byId));
         simpleMap.put(simpleStack,100F);
         simplePool.map().put(new ArrayList<>(),simpleMap);
         Map<List<TextKey>, ClientRawPool> itemMap = new HashMap<>();
         itemMap.put(new ArrayList<>(),simplePool);
-        return new ClientMobLootTable(ids.getLeft(),ids.getRight(),itemMap);
+        return new ClientMobLootTable(ids.getA(),ids.getB(),itemMap);
     }
 
     @Override
@@ -87,7 +88,7 @@ public class ClientMobLootTable extends AbstractTextKeyParsingClientLootTable<Cl
     }
 
     @Override
-    ClientMobLootTable filledTableToReturn(Pair<Identifier,Identifier> ids, Map<List<TextKey>, ClientRawPool> itemMap) {
-        return new ClientMobLootTable(ids.getLeft(),ids.getRight(),itemMap);
+    ClientMobLootTable filledTableToReturn(Tuple<ResourceLocation,ResourceLocation> ids, Map<List<TextKey>, ClientRawPool> itemMap) {
+        return new ClientMobLootTable(ids.getA(),ids.getB(),itemMap);
     }
 }

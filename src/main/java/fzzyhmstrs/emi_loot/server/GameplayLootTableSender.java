@@ -2,14 +2,13 @@ package fzzyhmstrs.emi_loot.server;
 
 import fzzyhmstrs.emi_loot.EMILoot;
 import fzzyhmstrs.emi_loot.util.TextKey;
+import fzzyhmstrs.emi_loot.util.cleancode.Identifier;
 import io.netty.buffer.Unpooled;
 import lol.bai.badpackets.api.PacketSender;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.registry.Registries;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.connection.ConnectionType;
 
 import java.util.LinkedList;
@@ -19,13 +18,13 @@ import java.util.Map;
 
 public class GameplayLootTableSender implements LootSender<GameplayLootPoolBuilder> {
 
-    public GameplayLootTableSender(Identifier id){
+    public GameplayLootTableSender(ResourceLocation id){
         this.idToSend = LootSender.getIdToSend(id);
     }
 
     private final String idToSend;
     final List<GameplayLootPoolBuilder> builderList = new LinkedList<>();
-    public static Identifier GAMEPLAY_SENDER = Identifier.of("e_l","g_s");
+    public static ResourceLocation GAMEPLAY_SENDER = Identifier.of("e_l","g_s");
     boolean isEmpty = true;
 
     @Override
@@ -44,20 +43,20 @@ public class GameplayLootTableSender implements LootSender<GameplayLootPoolBuild
     }
 
     @Override
-    public void send(ServerPlayerEntity player) {
+    public void send(ServerPlayer player) {
         if (!PacketSender.s2c(player).canSend(GAMEPLAY_SENDER)) return;
         if (isEmpty){
             if (EMILoot.DEBUG) EMILoot.LOGGER.info("avoiding empty gameplay table: " + idToSend);
             return;
         }
-        RegistryByteBuf buf = new RegistryByteBuf(Unpooled.buffer(), player.server.getRegistryManager(), ConnectionType.NEOFORGE);
+        RegistryFriendlyByteBuf buf = new RegistryFriendlyByteBuf(Unpooled.buffer(), player.server.registryAccess(), ConnectionType.NEOFORGE);
         //start with the loot pool ID and the number of builders to write check a few special conditions to send compressed shortcut packets
-        buf.writeString(idToSend);
+        buf.writeUtf(idToSend);
 
         if (builderList.size() == 1 && builderList.getFirst().isSimple){
             if (EMILoot.DEBUG) EMILoot.LOGGER.info("sending simple block: " + idToSend);
             buf.writeShort(-1);
-            ItemStack.PACKET_CODEC.encode(buf, builderList.getFirst().simpleStack);
+            ItemStack.STREAM_CODEC.encode(buf, builderList.getFirst().simpleStack);
             PacketSender.s2c(player).send(GAMEPLAY_SENDER, buf);
             return;
         } else if (builderList.isEmpty()){
@@ -90,7 +89,7 @@ public class GameplayLootTableSender implements LootSender<GameplayLootPoolBuild
 
                 //for each itemstack, write the stack and weight
                 keyPoolMap.forEach((stack,weight)->{
-                    ItemStack.PACKET_CODEC.encode(buf, stack);
+                    ItemStack.STREAM_CODEC.encode(buf, stack);
                     buf.writeFloat(weight);
                 });
             });

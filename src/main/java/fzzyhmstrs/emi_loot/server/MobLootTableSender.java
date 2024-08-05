@@ -2,14 +2,13 @@ package fzzyhmstrs.emi_loot.server;
 
 import fzzyhmstrs.emi_loot.EMILoot;
 import fzzyhmstrs.emi_loot.util.TextKey;
+import fzzyhmstrs.emi_loot.util.cleancode.Identifier;
 import io.netty.buffer.Unpooled;
 import lol.bai.badpackets.api.PacketSender;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.registry.Registries;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.connection.ConnectionType;
 
 import java.util.LinkedList;
@@ -18,7 +17,7 @@ import java.util.Map;
 
 public class MobLootTableSender implements LootSender<MobLootPoolBuilder> {
 
-    public MobLootTableSender(Identifier id, Identifier mobId){
+    public MobLootTableSender(ResourceLocation id, ResourceLocation mobId){
         this.idToSend = LootSender.getIdToSend(id);
         this.mobIdToSend = LootSender.getIdToSend(mobId);
     }
@@ -26,7 +25,7 @@ public class MobLootTableSender implements LootSender<MobLootPoolBuilder> {
     private final String idToSend;
     private final String mobIdToSend;
     final List<MobLootPoolBuilder> builderList = new LinkedList<>();
-    public static Identifier MOB_SENDER = Identifier.of("e_l","m_s");
+    public static ResourceLocation MOB_SENDER = Identifier.of("e_l","m_s");
     boolean isEmpty = true;
 
     @Override
@@ -45,22 +44,22 @@ public class MobLootTableSender implements LootSender<MobLootPoolBuilder> {
     }
 
     @Override
-    public void send(ServerPlayerEntity player) {
+    public void send(ServerPlayer player) {
         if (!PacketSender.s2c(player).canSend(MOB_SENDER)) return;
         //pre-build the builders to do empty checks
         if (isEmpty){
             if (EMILoot.DEBUG) EMILoot.LOGGER.info("avoiding empty mob: " + idToSend);
             return;
         }
-        RegistryByteBuf buf = new RegistryByteBuf(Unpooled.buffer(), player.server.getRegistryManager(), ConnectionType.NEOFORGE);
+        RegistryFriendlyByteBuf buf = new RegistryFriendlyByteBuf(Unpooled.buffer(), player.server.registryAccess(), ConnectionType.NEOFORGE);
         //start with the loot pool ID and the number of builders to write
-        buf.writeString(idToSend);
-        buf.writeString(mobIdToSend);
+        buf.writeUtf(idToSend);
+        buf.writeUtf(mobIdToSend);
 
         if (builderList.size() == 1 && builderList.getFirst().isSimple) {
             if (EMILoot.DEBUG) EMILoot.LOGGER.info("sending simple mob: " + idToSend);
             buf.writeShort(-1);
-            ItemStack.PACKET_CODEC.encode(buf, builderList.getFirst().simpleStack);
+            ItemStack.STREAM_CODEC.encode(buf, builderList.getFirst().simpleStack);
             PacketSender.s2c(player).send(MOB_SENDER, buf);
             return;
         } else if (builderList.isEmpty()){
@@ -97,7 +96,7 @@ public class MobLootTableSender implements LootSender<MobLootPoolBuilder> {
 
                 //for each itemstack, write the stack and weight
                 keyPoolMap.forEach((stack,weight)->{
-                    ItemStack.PACKET_CODEC.encode(buf, stack);
+                    ItemStack.STREAM_CODEC.encode(buf, stack);
                     buf.writeFloat(weight);
                 });
             });

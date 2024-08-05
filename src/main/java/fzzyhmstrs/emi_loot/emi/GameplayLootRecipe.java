@@ -9,12 +9,13 @@ import fzzyhmstrs.emi_loot.EMILootClient;
 import fzzyhmstrs.emi_loot.client.ClientBuiltPool;
 import fzzyhmstrs.emi_loot.client.ClientGameplayLootTable;
 import fzzyhmstrs.emi_loot.util.IconGroupEmiWidget;
+import fzzyhmstrs.emi_loot.util.cleancode.Identifier;
 import fzzyhmstrs.emi_loot.util.cleancode.Text;
 import fzzyhmstrs.emi_loot.util.WidgetRowBuilder;
-import net.minecraft.block.Blocks;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.Blocks;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import org.jetbrains.annotations.Nullable;
@@ -28,7 +29,7 @@ public class GameplayLootRecipe implements EmiRecipe {
 
     public GameplayLootRecipe(ClientGameplayLootTable loot){
         this.loot = loot;
-        loot.build(MinecraftClient.getInstance().world, Blocks.AIR);
+        loot.build(Minecraft.getInstance().level, Blocks.AIR);
         List<EmiStack> list = new LinkedList<>();
         loot.builtItems.forEach((builtPool)-> {
                 builtPool.stackMap().forEach((weight, stacks) -> {
@@ -39,7 +40,7 @@ public class GameplayLootRecipe implements EmiRecipe {
         );
         outputStacks = list;
         String key = "emi_loot.gameplay." + loot.id.toString();
-        Text text = Text.translatable(key);
+        Component text = Text.translatable(key);
         if (Objects.equals(text.getString(), key)){
             Optional<? extends ModContainer> modNameOpt = ModList.get().getModContainerById(loot.id.getNamespace());
             if (modNameOpt.isPresent()){
@@ -47,7 +48,7 @@ public class GameplayLootRecipe implements EmiRecipe {
                 String modName = modContainer.getModInfo().getDisplayName();
                 name = Text.translatable("emi_loot.gameplay.unknown_gameplay",modName);
             } else {
-                Text unknown = Text.translatable("emi_loot.gameplay.unknown");
+                Component unknown = Text.translatable("emi_loot.gameplay.unknown");
                 name = Text.translatable("emi_loot.gameplay.unknown_gameplay", unknown.getString());
             }
         } else {
@@ -57,7 +58,7 @@ public class GameplayLootRecipe implements EmiRecipe {
 
     private final ClientGameplayLootTable loot;
     private final List<EmiStack> outputStacks;
-    private final Text name;
+    private final Component name;
     private final List<WidgetRowBuilder> rowBuilderList = new LinkedList<>();
 
     private void addWidgetBuilders(ClientBuiltPool newPool, boolean recursive){
@@ -86,7 +87,7 @@ public class GameplayLootRecipe implements EmiRecipe {
     }
 
     @Override
-    public @Nullable Identifier getId() {
+    public @Nullable ResourceLocation getId() {
         return Identifier.of(EMILootClient.MOD_ID, "/" + getCategory().id.getPath() + "/" + loot.id.getNamespace() + "/" + loot.id.getPath());
     }
 
@@ -121,7 +122,7 @@ public class GameplayLootRecipe implements EmiRecipe {
         int y = 0;
 
         //draw the gameplay name
-        widgets.addText(name.asOrderedText(),0,0,0x404040,false);
+        widgets.addText(name.getVisualOrderText(),0,0,0x404040,false);
 
         y += 11;
         for (WidgetRowBuilder builder: rowBuilderList){

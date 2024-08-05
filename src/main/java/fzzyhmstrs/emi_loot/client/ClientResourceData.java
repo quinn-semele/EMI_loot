@@ -4,16 +4,17 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import fzzyhmstrs.emi_loot.EMILoot;
+import fzzyhmstrs.emi_loot.util.cleancode.Identifier;
 import it.unimi.dsi.fastutil.objects.Object2FloatMap;
 import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import net.minecraft.entity.EntityType;
-import net.minecraft.registry.Registries;
-import net.minecraft.resource.Resource;
-import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.SynchronousResourceReloader;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
+import net.minecraft.world.entity.EntityType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -37,39 +38,39 @@ public class ClientResourceData {
     }
 
 
-    private static class EntityOffsetsReloadListener implements SynchronousResourceReloader{
+        private static class EntityOffsetsReloadListener implements ResourceManagerReloadListener {
 
         @Override
-        public void reload(ResourceManager manager) {
+        public void onResourceManagerReload(ResourceManager manager) {
             MOB_OFFSETS.clear();
             MOB_SCALES.clear();
             MOB_ROTATIONS.clear();
-            manager.findResources("entity_fixers",path -> path.getPath().endsWith(".json")).forEach(this::load);
+            manager.listResources("entity_fixers",path -> path.getPath().endsWith(".json")).forEach(this::load);
             if (EMILoot.DEBUG) EMILoot.LOGGER.info(MOB_OFFSETS.toString());
             if (EMILoot.DEBUG) EMILoot.LOGGER.info(MOB_ROTATIONS.toString());
             if (EMILoot.DEBUG) EMILoot.LOGGER.info(MOB_SCALES.toString());
         }
 
-        private void load(Identifier fileId, Resource resource){
+        private void load(ResourceLocation fileId, Resource resource){
             if (EMILoot.DEBUG) EMILoot.LOGGER.info("Reading entity fixers from file: " + fileId.toString());
             try {
-                BufferedReader reader = resource.getReader();
+                BufferedReader reader = resource.openAsReader();
                 JsonObject json = JsonParser.parseReader(reader).getAsJsonObject();
                 json.entrySet().forEach((entry)->{
                     JsonElement element = entry.getValue();
-                    Identifier mobId = Identifier.of(entry.getKey());
-                    if (Registries.ENTITY_TYPE.containsId(mobId)) {
+                    ResourceLocation mobId = Identifier.of(entry.getKey());
+                    if (BuiltInRegistries.ENTITY_TYPE.containsKey(mobId)) {
                         if (element.isJsonObject()) {
                             JsonObject object = element.getAsJsonObject();
                             JsonElement offset = object.get("offset");
                             if (offset != null && offset.isJsonPrimitive()) {
 
-                                MOB_OFFSETS.put(Registries.ENTITY_TYPE.get(mobId), offset.getAsInt());
+                                MOB_OFFSETS.put(BuiltInRegistries.ENTITY_TYPE.get(mobId), offset.getAsInt());
 
                             }
                             JsonElement scaling = object.get("scale");
                             if (scaling != null && scaling.isJsonPrimitive()) {
-                                    MOB_SCALES.put(Registries.ENTITY_TYPE.get(mobId), scaling.getAsFloat());
+                                    MOB_SCALES.put(BuiltInRegistries.ENTITY_TYPE.get(mobId), scaling.getAsFloat());
                             }
                             float x = 0f;
                             float y = 0f;
@@ -87,7 +88,7 @@ public class ClientResourceData {
                                 z = zEl.getAsFloat();
                             }
                             if (x != 0f || y != 0f || z != 0f) {
-                                MOB_ROTATIONS.put(Registries.ENTITY_TYPE.get(mobId), new Vector3f(x, y, z));
+                                MOB_ROTATIONS.put(BuiltInRegistries.ENTITY_TYPE.get(mobId), new Vector3f(x, y, z));
                             }
 
                         } else {

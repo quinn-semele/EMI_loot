@@ -1,5 +1,6 @@
 package fzzyhmstrs.emi_loot.client;
 
+import fzzyhmstrs.emi_loot.util.cleancode.Identifier;
 import fzzyhmstrs.emi_loot.util.cleancode.Text;
 import fzzyhmstrs.emi_loot.util.TextKey;
 import it.unimi.dsi.fastutil.objects.Object2FloatMap;

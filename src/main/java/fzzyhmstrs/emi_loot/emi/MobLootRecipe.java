@@ -13,20 +13,21 @@ import fzzyhmstrs.emi_loot.client.ClientMobLootTable;
 import fzzyhmstrs.emi_loot.client.ClientResourceData;
 import fzzyhmstrs.emi_loot.util.EntityEmiStack;
 import fzzyhmstrs.emi_loot.util.IconGroupEmiWidget;
+import fzzyhmstrs.emi_loot.util.cleancode.Identifier;
 import fzzyhmstrs.emi_loot.util.cleancode.Text;
 import fzzyhmstrs.emi_loot.util.WidgetRowBuilder;
-import net.minecraft.block.Blocks;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.mob.SlimeEntity;
-import net.minecraft.entity.passive.SheepEntity;
-import net.minecraft.registry.Registries;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.util.DyeColor;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Box;
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.animal.Sheep;
+import net.minecraft.world.entity.monster.Slime;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedList;
@@ -37,30 +38,30 @@ import java.util.Optional;
 public class MobLootRecipe implements EmiRecipe {
 
     //private final static Map<EntityType<?>,Integer> needsElevating;
-    private static final Identifier ARROW_ID = Identifier.of(EMILoot.MOD_ID,"textures/gui/downturn_arrow.png");
+    private static final ResourceLocation ARROW_ID = Identifier.of(EMILoot.MOD_ID,"textures/gui/downturn_arrow.png");
 
     public MobLootRecipe(ClientMobLootTable loot){
         this.loot = loot;
-        loot.build(MinecraftClient.getInstance().world, Blocks.AIR);
-        Identifier mobId = loot.mobId;
-        EntityType<?> type = Registries.ENTITY_TYPE.get(mobId);
+        loot.build(Minecraft.getInstance().level, Blocks.AIR);
+        ResourceLocation mobId = loot.mobId;
+        EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.get(mobId);
         this.type = type;
-        MinecraftClient client = MinecraftClient.getInstance();
-        Entity entity = type.create(client.world);
+        Minecraft client = Minecraft.getInstance();
+        Entity entity = type.create(client.level);
         if (entity != null) {
-            Box box = entity.getBoundingBox();
-            double len = box.getAverageSideLength();
+            AABB box = entity.getBoundingBox();
+            double len = box.getSize();
             if (len > 1.05){
                 len = (len + Math.sqrt(len))/2.0;
             }
-            if (entity instanceof SlimeEntity){
-                ((SlimeEntity)entity).setSize(5,false);
+            if (entity instanceof Slime){
+                ((Slime)entity).setSize(5,false);
             }
-            if (entity instanceof SheepEntity && !Objects.equals(loot.color, "")){
+            if (entity instanceof Sheep && !Objects.equals(loot.color, "")){
                 DyeColor color = DyeColor.byName(loot.color,DyeColor.WHITE);
-                MutableText colorName = Text.translatable("color.minecraft." + color.getName());
+                MutableComponent colorName = Text.translatable("color.minecraft." + color.getName());
                 name = Text.translatable("emi_loot.color_name",colorName.getString(),entity.getName().getString());
-                ((SheepEntity)entity).setColor(color);
+                ((Sheep)entity).setColor(color);
 
             } else {
                 name = entity.getName();
@@ -89,7 +90,7 @@ public class MobLootRecipe implements EmiRecipe {
     private final ClientMobLootTable loot;
     private final EmiStack inputStack;
     private final List<EmiStack> outputStacks;
-    private final Text name;
+    private final Component name;
     private final EntityType<?> type;
     private final List<WidgetRowBuilder> rowBuilderList = new LinkedList<>();
 
@@ -119,7 +120,7 @@ public class MobLootRecipe implements EmiRecipe {
     }
 
     @Override
-    public @Nullable Identifier getId() {
+    public @Nullable ResourceLocation getId() {
         return Identifier.of(EMILootClient.MOD_ID, "/" + getCategory().id.getPath() + "/" + loot.id.getNamespace() + "/" + loot.id.getPath());
     }
 
@@ -127,8 +128,8 @@ public class MobLootRecipe implements EmiRecipe {
     public List<EmiIngredient> getInputs() {
         if (inputStack instanceof EntityEmiStack entityStack
                 && entityStack.getKey() instanceof Entity entity
-                && entity.getPickBlockStack() != null) {
-            return List.of(EmiStack.of(entity.getPickBlockStack()));
+                && entity.getPickResult() != null) {
+            return List.of(EmiStack.of(entity.getPickResult()));
         } else {
             return new LinkedList<>();
         }
@@ -171,7 +172,7 @@ public class MobLootRecipe implements EmiRecipe {
             widgets.addTexture(EmiTexture.LARGE_SLOT,x,y);
             widgets.addDrawable(x,y,16,16,(matrices,mx,my,delta)->inputStack.render(matrices,5, 6 + offset,delta));
         }
-        widgets.addText(name.asOrderedText(),30,0,0x404040,false);
+        widgets.addText(name.getVisualOrderText(),30,0,0x404040,false);
         if (rowBuilderList.size() == 1 && rowBuilderList.getFirst().getWidth() <= 94){
             widgets.addTexture(new EmiTexture(ARROW_ID, 0, 16, 39, 15, 39, 15, 64, 32), 30, 10);
             x = 60;

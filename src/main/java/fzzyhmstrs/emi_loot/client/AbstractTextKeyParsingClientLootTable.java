@@ -133,20 +133,20 @@ abstract public class AbstractTextKeyParsingClientLootTable<T extends LootReceiv
         builtItems = finalList;
     }
 
-    abstract Tuple<Identifier,Identifier> getBufId(FriendlyByteBuf buf);
+    abstract Tuple<ResourceLocation,ResourceLocation> getBufId(RegistryFriendlyByteBuf buf);
 
-    abstract T simpleTableToReturn(Tuple<Identifier,Identifier> ids,FriendlyByteBuf buf);
+    abstract T simpleTableToReturn(Tuple<ResourceLocation,ResourceLocation> ids,RegistryFriendlyByteBuf buf);
 
     abstract T emptyTableToReturn();
 
-    abstract T filledTableToReturn(Tuple<Identifier,Identifier> ids, Map<List<TextKey>, ClientRawPool> itemMap);
+    abstract T filledTableToReturn(Tuple<ResourceLocation,ResourceLocation> ids, Map<List<TextKey>, ClientRawPool> itemMap);
 
     @Override
     public LootReceiver fromBuf(RegistryFriendlyByteBuf buf) {
         boolean isEmpty = true;
 
-        Tuple<Identifier,Identifier> ids = getBufId(buf);
-        Identifier id = ids.getA();
+        Tuple<ResourceLocation,ResourceLocation> ids = getBufId(buf);
+        ResourceLocation id = ids.getA();
         if (EMILoot.DEBUG) EMILoot.LOGGER.info("parsing table " + id);
         int builderCount = buf.readShort();
         if (builderCount == -1){

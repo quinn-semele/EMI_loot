@@ -5,15 +5,19 @@ import fzzyhmstrs.emi_loot.parser.processor.ListProcessors;
 import fzzyhmstrs.emi_loot.parser.processor.NumberProcessors;
 import fzzyhmstrs.emi_loot.util.cleancode.Text;
 import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
-import net.minecraft.entity.passive.CatVariant;
-import net.minecraft.entity.passive.FrogVariant;
-import net.minecraft.predicate.NumberRange;
-import net.minecraft.predicate.entity.*;
-import net.minecraft.registry.Registries;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.world.GameMode;
+import net.minecraft.advancements.critereon.EntityPredicate;
+import net.minecraft.advancements.critereon.EntitySubPredicate;
+import net.minecraft.advancements.critereon.FishingHookPredicate;
+import net.minecraft.advancements.critereon.LightningBoltPredicate;
+import net.minecraft.advancements.critereon.MinMaxBounds;
+import net.minecraft.advancements.critereon.PlayerPredicate;
+import net.minecraft.advancements.critereon.SlimePredicate;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.animal.CatVariant;
+import net.minecraft.world.entity.animal.FrogVariant;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -22,7 +26,7 @@ import java.util.Optional;
 
 public class TypeSpecificPredicateParser {
 
-    public static Text parseTypeSpecificPredicate(EntitySubPredicate predicate){
+    public static Component parseTypeSpecificPredicate(EntitySubPredicate predicate){
         if (predicate instanceof LightningBoltPredicate){
             return parseLightningBoltPredicate((LightningBoltPredicate)predicate);
         }
@@ -39,17 +43,17 @@ public class TypeSpecificPredicateParser {
             return parseSlimePredicate((SlimePredicate)predicate);
         }
 
-        if (predicate instanceof VariantPredicates.Predicate<?> variantPredicate) {
+        if (predicate instanceof EntityVariantPredicate.SubPredicate<?> variantPredicate) {
             if (variantPredicate.variant() instanceof CatVariant cat) {
-                Identifier id = Registries.CAT_VARIANT.getId(cat);
+                ResourceLocation id = BuiltInRegistries.CAT_VARIANT.getKey(cat);
                 if (id != null){
-                    MutableText catVar = Text.translatable("emi_loot.entity_predicate.type_specific.cat." + id);
+                    MutableComponent catVar = Text.translatable("emi_loot.entity_predicate.type_specific.cat." + id);
                     return Text.translatable("emi_loot.entity_predicate.type_specific.cat",catVar.getString());
                 }
             } else if (variantPredicate.variant() instanceof FrogVariant frog) {
-                Identifier id = Registries.FROG_VARIANT.getId(frog);
+                ResourceLocation id = BuiltInRegistries.FROG_VARIANT.getKey(frog);
                 if (id != null){
-                    MutableText frogVar = Text.translatable("emi_loot.entity_predicate.type_specific.frog." + id);
+                    MutableComponent frogVar = Text.translatable("emi_loot.entity_predicate.type_specific.frog." + id);
                     return Text.translatable("emi_loot.entity_predicate.type_specific.frog",frogVar.getString());
                 }
             }
@@ -60,9 +64,9 @@ public class TypeSpecificPredicateParser {
     }
     
     
-    public static Text parseLightningBoltPredicate(LightningBoltPredicate predicate){
-        NumberRange.IntRange blocksSetOnFire = predicate.blocksSetOnFire();
-        if (!blocksSetOnFire.equals(NumberRange.IntRange.ANY)){
+    public static Component parseLightningBoltPredicate(LightningBoltPredicate predicate){
+        MinMaxBounds.Ints blocksSetOnFire = predicate.blocksSetOnFire();
+        if (!blocksSetOnFire.equals(MinMaxBounds.Ints.ANY)){
             return Text.translatable(
                     "emi_loot.entity_predicate.type_specific.lightning",
                     NumberProcessors.processNumberRange(
@@ -91,14 +95,14 @@ public class TypeSpecificPredicateParser {
     }
     
     
-    public static Text parseFishingHookPredicate(FishingHookPredicate predicate){
+    public static Component parseFishingHookPredicate(FishingHookPredicate predicate){
         Optional<Boolean> inOpenWater = predicate.inOpenWater();
         return (inOpenWater.isPresent() && inOpenWater.get()) ? Text.translatable("emi_loot.entity_predicate.type_specific.fishing_hook_true") : Text.translatable("emi_loot.entity_predicate.type_specific.fishing_hook_false");
     }
 
-    public static Text parsePlayerPredicate(PlayerPredicate predicate){
-        NumberRange.IntRange experienceLevel = predicate.experienceLevel();
-        if (!experienceLevel.equals(NumberRange.IntRange.ANY)){
+    public static Component parsePlayerPredicate(PlayerPredicate predicate){
+        MinMaxBounds.Ints experienceLevel = predicate.level();
+        if (!experienceLevel.equals(MinMaxBounds.Ints.ANY)){
             return Text.translatable(
                     "emi_loot.entity_predicate.type_specific.player",
                     NumberProcessors.processNumberRange(
@@ -112,7 +116,7 @@ public class TypeSpecificPredicateParser {
             );
         }
 
-        Optional<GameMode> gameMode = predicate.gameMode();
+        Optional<GameMode> gameMode = predicate.gameType();
         if (gameMode.isPresent()){
             return Text.translatable(
                     "emi_loot.entity_predicate.type_specific.player",
@@ -121,14 +125,14 @@ public class TypeSpecificPredicateParser {
 
         List<PlayerPredicate.StatMatcher<?>> stats = predicate.stats();
         if (!stats.isEmpty()) {
-            List<MutableText> list = new LinkedList<>();
+            List<MutableComponent> list = new LinkedList<>();
             for (PlayerPredicate.StatMatcher<?> stat : stats) {
                 String name = stat.stat().get().getName();
                 String[] namePieces = name.split(":");
                 if (namePieces.length == 2) {
                     String typeId = namePieces[0].replace('.', ':');
                     String valueId = namePieces[1].replace('.', ':');
-                    MutableText num = NumberProcessors.processNumberRange(
+                    MutableComponent num = NumberProcessors.processNumberRange(
                             stat.range(),
                             "emi_loot.entity_predicate.type_specific.player.stats.exact",
                             "emi_loot.entity_predicate.type_specific.player.stats.between",
@@ -147,10 +151,10 @@ public class TypeSpecificPredicateParser {
             }
         }
 
-        Object2BooleanMap<Identifier> recipes = predicate.recipes();
+        Object2BooleanMap<ResourceLocation> recipes = predicate.recipes();
         if (!recipes.isEmpty()){
-            List<MutableText> list = new LinkedList<>();
-            for (Object2BooleanMap.Entry<Identifier> entry: recipes.object2BooleanEntrySet()){
+            List<MutableComponent> list = new LinkedList<>();
+            for (Object2BooleanMap.Entry<ResourceLocation> entry: recipes.object2BooleanEntrySet()){
                 list.add(
                         entry.getBooleanValue()
                         ?
@@ -167,23 +171,23 @@ public class TypeSpecificPredicateParser {
             }
         }
 
-        Map<Identifier, PlayerPredicate.AdvancementPredicate> advancements = predicate.advancements();
+        Map<ResourceLocation, PlayerPredicate.AdvancementPredicate> advancements = predicate.advancements();
         if (!advancements.isEmpty()){
-            List<MutableText> list = new LinkedList<>();
-            for (Map.Entry<Identifier, PlayerPredicate.AdvancementPredicate> entry: advancements.entrySet()){
+            List<MutableComponent> list = new LinkedList<>();
+            for (Map.Entry<ResourceLocation, PlayerPredicate.AdvancementPredicate> entry: advancements.entrySet()){
                 String idString = entry.getKey().toString();
                 PlayerPredicate.AdvancementPredicate advancementPredicate = entry.getValue();
-                if (advancementPredicate instanceof PlayerPredicate.CompletedAdvancementPredicate){
-                    boolean done = ((PlayerPredicate.CompletedAdvancementPredicate) advancementPredicate).done();
+                if (advancementPredicate instanceof PlayerPredicate.AdvancementDonePredicate){
+                    boolean done = ((PlayerPredicate.AdvancementDonePredicate) advancementPredicate).done();
                     if (done){
                         list.add(Text.translatable("emi_loot.entity_predicate.type_specific.player.adv.id_true",idString));
                     } else {
                         list.add(Text.translatable("emi_loot.entity_predicate.type_specific.player.adv.id_false",idString));
                     }
-                } else if (advancementPredicate instanceof PlayerPredicate.AdvancementCriteriaPredicate){
-                    Object2BooleanMap<String> criteria = ((PlayerPredicate.AdvancementCriteriaPredicate) advancementPredicate).criteria();
+                } else if (advancementPredicate instanceof PlayerPredicate.AdvancementCriterionsPredicate){
+                    Object2BooleanMap<String> criteria = ((PlayerPredicate.AdvancementCriterionsPredicate) advancementPredicate).criteria();
                     if (!criteria.isEmpty()) {
-                        List<MutableText> list2 = new LinkedList<>();
+                        List<MutableComponent> list2 = new LinkedList<>();
                         for (Object2BooleanMap.Entry<String> criteriaEntry : criteria.object2BooleanEntrySet()){
                             if (criteriaEntry.getBooleanValue()){
                                 list2.add(Text.translatable("emi_loot.entity_predicate.type_specific.player.adv.crit_true",criteriaEntry.getKey()));
@@ -209,9 +213,9 @@ public class TypeSpecificPredicateParser {
         return Text.translatable("emi_loot.predicate.invalid");
     }
     
-    public static Text parseSlimePredicate(SlimePredicate predicate){
-        NumberRange.IntRange size = predicate.size();
-        if (size.equals(NumberRange.IntRange.ANY)){
+    public static Component parseSlimePredicate(SlimePredicate predicate){
+        MinMaxBounds.Ints size = predicate.size();
+        if (size.equals(MinMaxBounds.Ints.ANY)){
             if (EMILoot.DEBUG) EMILoot.LOGGER.warn("Undefined slime size predicate in table: "  + LootTableParser.currentTable);
             return Text.translatable("emi_loot.predicate.invalid");
         }

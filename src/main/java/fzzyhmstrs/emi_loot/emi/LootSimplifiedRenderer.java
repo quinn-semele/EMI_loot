@@ -2,14 +2,15 @@ package fzzyhmstrs.emi_loot.emi;
 
 import dev.emi.emi.api.render.EmiRenderable;
 import fzzyhmstrs.emi_loot.EMILoot;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.util.Identifier;
+import fzzyhmstrs.emi_loot.util.cleancode.Identifier;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.resources.ResourceLocation;
 
 public class LootSimplifiedRenderer implements EmiRenderable {
 
     private final int u;
     private final int v;
-    private final Identifier SPRITE_SHEET = Identifier.of(EMILoot.MOD_ID,"textures/gui/emi_recipe_textures.png");
+    private final ResourceLocation SPRITE_SHEET = Identifier.of(EMILoot.MOD_ID,"textures/gui/emi_recipe_textures.png");
 
     public LootSimplifiedRenderer(int u, int v){
         this.u = u;
@@ -18,7 +19,7 @@ public class LootSimplifiedRenderer implements EmiRenderable {
 
 
     @Override
-    public void render(DrawContext draw, int x, int y, float delta) {
-        draw.drawTexture(SPRITE_SHEET, x, y, u, v, 16, 16, 32, 16);
+    public void render(GuiGraphics draw, int x, int y, float delta) {
+        draw.blit(SPRITE_SHEET, x, y, u, v, 16, 16, 32, 16);
     }
 }

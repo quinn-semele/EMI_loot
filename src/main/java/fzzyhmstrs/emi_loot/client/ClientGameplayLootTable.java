@@ -1,18 +1,19 @@
 package fzzyhmstrs.emi_loot.client;
 
+import fzzyhmstrs.emi_loot.util.cleancode.Identifier;
 import fzzyhmstrs.emi_loot.util.cleancode.Text;
 import fzzyhmstrs.emi_loot.util.TextKey;
 import it.unimi.dsi.fastutil.objects.Object2FloatMap;
 import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
-import net.minecraft.block.Block;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.tag.BlockTags;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.Pair;
-import net.minecraft.world.World;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.util.Tuple;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 
 import java.util.*;
 
@@ -20,17 +21,17 @@ import java.util.*;
 public class ClientGameplayLootTable extends AbstractTextKeyParsingClientLootTable<ClientGameplayLootTable> {
 
     public static ClientGameplayLootTable INSTANCE = new ClientGameplayLootTable();
-    private static final Identifier EMPTY = Identifier.of("blocks/empty");
-    public final Identifier id;
-    public final Identifier blockId;
+    private static final ResourceLocation EMPTY = Identifier.of("blocks/empty");
+    public final ResourceLocation id;
+    public final ResourceLocation blockId;
 
     public ClientGameplayLootTable(){
         super();
         this.id = EMPTY;
-        this.blockId = Identifier.of("air");
+        this.blockId = Identifier.ofVanilla("air");
     }
 
-    public ClientGameplayLootTable(Identifier id, Map<List<TextKey>, ClientRawPool> map){
+    public ClientGameplayLootTable(ResourceLocation id, Map<List<TextKey>, ClientRawPool> map){
         super(map);
         this.id = id;
         String ns = id.getNamespace();
@@ -44,7 +45,7 @@ public class ClientGameplayLootTable extends AbstractTextKeyParsingClientLootTab
     }
 
     @Override
-    public Identifier getId() {
+    public ResourceLocation getId() {
         return id;
     }
 
@@ -54,25 +55,25 @@ public class ClientGameplayLootTable extends AbstractTextKeyParsingClientLootTab
     }
 
     @Override
-    List<Pair<Integer, Text>> getSpecialTextKeyList(World world, Block block) {
+    List<Tuple<Integer, Component>> getSpecialTextKeyList(Level world, Block block) {
         String tool = "";
-        if (block.getRegistryEntry().isIn(BlockTags.PICKAXE_MINEABLE)){
+        if (block.builtInRegistryHolder().is(BlockTags.MINEABLE_WITH_PICKAXE)){
             tool = "pickaxe";
-        } else if (block.getRegistryEntry().isIn(BlockTags.AXE_MINEABLE)){
+        } else if (block.builtInRegistryHolder().is(BlockTags.MINEABLE_WITH_AXE)){
             tool = "axe";
-        } else if (block.getRegistryEntry().isIn(BlockTags.SHOVEL_MINEABLE)){
+        } else if (block.builtInRegistryHolder().is(BlockTags.MINEABLE_WITH_SHOVEL)){
             tool = "shovel";
-        } else if (block.getRegistryEntry().isIn(BlockTags.HOE_MINEABLE)){
+        } else if (block.builtInRegistryHolder().is(BlockTags.MINEABLE_WITH_HOE)){
             tool = "hoe";
         }
-        List<Pair<Integer,Text>> toolNeededList = new LinkedList<>();
+        List<Tuple<Integer,Component>> toolNeededList = new LinkedList<>();
         if (!Objects.equals(tool,"")){
             String type;
-            if (block.getRegistryEntry().isIn(BlockTags.NEEDS_STONE_TOOL)){
+            if (block.builtInRegistryHolder().is(BlockTags.NEEDS_STONE_TOOL)){
                 type = "stone";
-            } else if (block.getRegistryEntry().isIn(BlockTags.NEEDS_IRON_TOOL)){
+            } else if (block.builtInRegistryHolder().is(BlockTags.NEEDS_IRON_TOOL)){
                 type = "iron";
-            } else if (block.getRegistryEntry().isIn(BlockTags.NEEDS_DIAMOND_TOOL)){
+            } else if (block.builtInRegistryHolder().is(BlockTags.NEEDS_DIAMOND_TOOL)){
                 type = "diamond";
             } else{
                 type = "wood";
@@ -80,27 +81,27 @@ public class ClientGameplayLootTable extends AbstractTextKeyParsingClientLootTab
             String keyString = "emi_loot." + tool + "." + type;
             int keyIndex = TextKey.getIndex(keyString);
             if (keyIndex != -1){
-                toolNeededList.add(new Pair<>(keyIndex, Text.translatable(keyString)));
+                toolNeededList.add(new Tuple<>(keyIndex, Text.translatable(keyString)));
             }
         }
         return toolNeededList;
     }
 
     @Override
-    Pair<Identifier,Identifier> getBufId(PacketByteBuf buf) {
-        return new Pair<>(getIdFromBuf(buf),EMPTY);
+    Tuple<ResourceLocation,ResourceLocation> getBufId(RegistryFriendlyByteBuf buf) {
+        return new Tuple<>(getIdFromBuf(buf),EMPTY);
     }
 
     @Override
-    ClientGameplayLootTable simpleTableToReturn(Pair<Identifier,Identifier> ids, PacketByteBuf buf) {
+    ClientGameplayLootTable simpleTableToReturn(Tuple<ResourceLocation,ResourceLocation> ids, RegistryFriendlyByteBuf buf) {
         ClientRawPool simplePool = new ClientRawPool(new HashMap<>());
         Object2FloatMap<ItemStack> simpleMap = new Object2FloatOpenHashMap<>();
-        ItemStack simpleStack = new ItemStack(buf.readRegistryValue(Registries.ITEM));
+        ItemStack simpleStack = new ItemStack(buf.readById(BuiltInRegistries.ITEM::byId));
         simpleMap.put(simpleStack,100F);
         simplePool.map().put(new ArrayList<>(),simpleMap);
         Map<List<TextKey>, ClientRawPool> itemMap = new HashMap<>();
         itemMap.put(new ArrayList<>(),simplePool);
-        return new ClientGameplayLootTable(ids.getLeft(),itemMap);
+        return new ClientGameplayLootTable(ids.getA(),itemMap);
     }
 
     @Override
@@ -109,7 +110,7 @@ public class ClientGameplayLootTable extends AbstractTextKeyParsingClientLootTab
     }
 
     @Override
-    ClientGameplayLootTable filledTableToReturn(Pair<Identifier,Identifier> ids, Map<List<TextKey>, ClientRawPool> itemMap) {
-        return new ClientGameplayLootTable(ids.getLeft(),itemMap);
+    ClientGameplayLootTable filledTableToReturn(Tuple<ResourceLocation,ResourceLocation> ids, Map<List<TextKey>, ClientRawPool> itemMap) {
+        return new ClientGameplayLootTable(ids.getA(),itemMap);
     }
 }

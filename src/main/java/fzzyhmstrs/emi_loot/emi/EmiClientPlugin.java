@@ -8,17 +8,18 @@ import dev.emi.emi.api.stack.EmiStack;
 import fzzyhmstrs.emi_loot.EMILoot;
 import fzzyhmstrs.emi_loot.EMILootClient;
 import fzzyhmstrs.emi_loot.client.*;
-import net.minecraft.block.Blocks;
-import net.minecraft.item.Items;
-import net.minecraft.util.Identifier;
+import fzzyhmstrs.emi_loot.util.cleancode.Identifier;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Blocks;
 
 @EmiEntrypoint
 public class EmiClientPlugin implements EmiPlugin {
-    private static final Identifier LOOT_ID = Identifier.of(EMILoot.MOD_ID,"chest_loot");
-    private static final Identifier BLOCK_ID = Identifier.of(EMILoot.MOD_ID,"block_drops");
-    private static final Identifier MOB_ID = Identifier.of(EMILoot.MOD_ID,"mob_drops");
-    private static final Identifier GAMEPLAY_ID = Identifier.of(EMILoot.MOD_ID,"gameplay_drops");
-    private static final Identifier ARCHAEOLOGY_ID = Identifier.of(EMILoot.MOD_ID, "archaeology_drops");
+    private static final ResourceLocation LOOT_ID = Identifier.of(EMILoot.MOD_ID,"chest_loot");
+    private static final ResourceLocation BLOCK_ID = Identifier.of(EMILoot.MOD_ID,"block_drops");
+    private static final ResourceLocation MOB_ID = Identifier.of(EMILoot.MOD_ID,"mob_drops");
+    private static final ResourceLocation GAMEPLAY_ID = Identifier.of(EMILoot.MOD_ID,"gameplay_drops");
+    private static final ResourceLocation ARCHAEOLOGY_ID = Identifier.of(EMILoot.MOD_ID, "archaeology_drops");
     public static final EmiRecipeCategory LOOT_CATEGORY = new EmiRecipeCategory(LOOT_ID, EmiStack.of(Blocks.CHEST.asItem()), new LootSimplifiedRenderer(0,0));
     public static final EmiRecipeCategory BLOCK_CATEGORY = new EmiRecipeCategory(BLOCK_ID, EmiStack.of(Blocks.DIAMOND_ORE.asItem()), new LootSimplifiedRenderer(16,0));
     public static final EmiRecipeCategory MOB_CATEGORY = new EmiRecipeCategory(MOB_ID, EmiStack.of(Blocks.ZOMBIE_HEAD.asItem()), new LootSimplifiedRenderer(0,16));

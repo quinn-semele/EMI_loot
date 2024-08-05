@@ -11,10 +11,11 @@ import fzzyhmstrs.emi_loot.client.ClientBlockLootTable;
 import fzzyhmstrs.emi_loot.client.ClientBuiltPool;
 import fzzyhmstrs.emi_loot.util.IconGroupEmiWidget;
 import fzzyhmstrs.emi_loot.util.WidgetRowBuilder;
-import net.minecraft.block.Block;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.registry.Registries;
-import net.minecraft.util.Identifier;
+import fzzyhmstrs.emi_loot.util.cleancode.Identifier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedList;
@@ -30,9 +31,9 @@ public class BlockLootRecipe implements EmiRecipe {
 
     public BlockLootRecipe(ClientBlockLootTable loot){
         this.loot = loot;
-        Identifier blockId = loot.blockId;
-        Block block = Registries.BLOCK.get(blockId);
-        loot.build(MinecraftClient.getInstance().world, block);
+        ResourceLocation blockId = loot.blockId;
+        Block block = BuiltInRegistries.BLOCK.get(blockId);
+        loot.build(Minecraft.getInstance().level, block);
         inputStack = EmiStack.of(block);
         List<EmiStack> list = new LinkedList<>();
         loot.builtItems.forEach((builtPool)-> {
@@ -72,7 +73,7 @@ public class BlockLootRecipe implements EmiRecipe {
     }
 
     @Override
-    public @Nullable Identifier getId() {
+    public @Nullable ResourceLocation getId() {
         return Identifier.of(EMILootClient.MOD_ID, "/" + getCategory().id.getPath() + "/" + loot.id.getNamespace() + "/" + loot.id.getPath());
     }
 

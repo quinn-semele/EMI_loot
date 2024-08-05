@@ -5,8 +5,7 @@ import fzzyhmstrs.emi_loot.parser.processor.ListProcessors;
 import fzzyhmstrs.emi_loot.util.LText;
 import net.minecraft.item.Item;
 import net.minecraft.predicate.NumberRange;
-import net.minecraft.predicate.item.EnchantmentPredicate;
-import net.minecraft.predicate.item.ItemPredicate;
+import net.minecraft.predicate.item.*;
 import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.text.MutableText;
@@ -19,7 +18,7 @@ import java.util.Optional;
 public class ItemPredicateParser {
 
     public static Text parseItemPredicate(ItemPredicate predicate){
-        Optional<TagKey<Item>> tag = predicate.tag();
+        Optional<TagKey<Item>> tag = predicate.items().flatMap(RegistryEntryList::getTagKey);
         if (tag.isPresent()){
             return LText.translatable("emi_loot.item_predicate.tag",tag.get().id());
         }
@@ -37,15 +36,15 @@ public class ItemPredicateParser {
             return LText.translatable("emi_loot.item_predicate.count", Integer.toString(finalMin), Integer.toString(finalMax));
         }
         
-        NumberRange.IntRange durability = predicate.durability();
+        NumberRange.IntRange durability = ((DamagePredicate) predicate.subPredicates().get(ItemSubPredicateTypes.DAMAGE)).durability();
         if (durability != NumberRange.IntRange.ANY){
             int finalMax = durability.max().orElse(0);
             int finalMin = durability.min().orElse(0);
             return LText.translatable("emi_loot.item_predicate.durability", Integer.toString(finalMin), Integer.toString(finalMax));
         }
         
-        List<EnchantmentPredicate> enchants = predicate.enchantments();
-        List<EnchantmentPredicate> storedEnchants = predicate.storedEnchantments();
+        List<EnchantmentPredicate> enchants = ((EnchantmentsPredicate) predicate.subPredicates().get(ItemSubPredicateTypes.ENCHANTMENTS)).getEnchantments();
+        List<EnchantmentPredicate> storedEnchants = ((EnchantmentsPredicate) predicate.subPredicates().get(ItemSubPredicateTypes.STORED_ENCHANTMENTS)).getEnchantments();
         if (enchants.size() + storedEnchants.size() > 0){
             List<EnchantmentPredicate> list = new LinkedList<>();
             list.addAll(enchants);

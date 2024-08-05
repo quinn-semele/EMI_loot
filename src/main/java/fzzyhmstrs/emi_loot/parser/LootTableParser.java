@@ -28,6 +28,7 @@ import net.minecraft.loot.function.LootFunctionType;
 import net.minecraft.loot.provider.number.LootNumberProvider;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -35,13 +36,13 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-@Mod.EventBusSubscriber(modid = EMILoot.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = EMILoot.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
 public class LootTableParser {
 
     private static final Map<Identifier, ChestLootTableSender> chestSenders = new HashMap<>();
@@ -56,7 +57,7 @@ public class LootTableParser {
     public static List<Identifier> parsedDirectDrops = new LinkedList<>();
     public static boolean hasParsedLootTables = false;
     public static LootManager lootManager = null;
-    public static final Identifier CLEAR_LOOTS = new Identifier("e_l", "clear");
+    public static final Identifier CLEAR_LOOTS = Identifier.of("e_l", "clear");
 
 
     static {
@@ -124,10 +125,10 @@ public class LootTableParser {
                 parseLootTable(key.id(), (LootTable) table);
         });
         if (EMILoot.config.parseMobLoot) {
-            Identifier chk = new Identifier("pig");
+            Identifier chk = Identifier.of("pig");
             Registries.ENTITY_TYPE.stream().toList().forEach((type) -> {
                 if (type == EntityType.SHEEP){
-                    for (Identifier sheepId : ServerResourceData.SHEEP_TABLES){
+                    for (RegistryKey<LootTable> sheepId : ServerResourceData.SHEEP_TABLES){
                         parseEntityType(manager,type,sheepId,chk);
                     }
                 }
@@ -507,7 +508,7 @@ public class LootTableParser {
                 } else if (type == LootContextTypes.BLOCK) {
                     results = parseBlockLootTable(table, id);
                 } else if (type == LootContextTypes.ENTITY) {
-                    results = parseMobLootTable(table, id, new Identifier("empty"));
+                    results = parseMobLootTable(table, id, Identifier.of("empty"));
                 } else if (type == LootContextTypes.FISHING) {
                     results = parseGameplayLootTable(table, id);
                 } else {

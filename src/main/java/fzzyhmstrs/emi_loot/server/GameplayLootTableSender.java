@@ -6,9 +6,11 @@ import io.netty.buffer.Unpooled;
 import lol.bai.badpackets.api.PacketSender;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
+import net.neoforged.neoforge.network.connection.ConnectionType;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -23,7 +25,7 @@ public class GameplayLootTableSender implements LootSender<GameplayLootPoolBuild
 
     private final String idToSend;
     final List<GameplayLootPoolBuilder> builderList = new LinkedList<>();
-    public static Identifier GAMEPLAY_SENDER = new Identifier("e_l","g_s");
+    public static Identifier GAMEPLAY_SENDER = Identifier.of("e_l","g_s");
     boolean isEmpty = true;
 
     @Override
@@ -48,14 +50,14 @@ public class GameplayLootTableSender implements LootSender<GameplayLootPoolBuild
             if (EMILoot.DEBUG) EMILoot.LOGGER.info("avoiding empty gameplay table: " + idToSend);
             return;
         }
-        PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+        RegistryByteBuf buf = new RegistryByteBuf(Unpooled.buffer(), player.server.getRegistryManager(), ConnectionType.NEOFORGE);
         //start with the loot pool ID and the number of builders to write check a few special conditions to send compressed shortcut packets
         buf.writeString(idToSend);
 
-        if (builderList.size() == 1 && builderList.get(0).isSimple){
+        if (builderList.size() == 1 && builderList.getFirst().isSimple){
             if (EMILoot.DEBUG) EMILoot.LOGGER.info("sending simple block: " + idToSend);
             buf.writeShort(-1);
-            buf.writeRegistryValue(Registries.ITEM,builderList.get(0).simpleStack.getItem());
+            ItemStack.PACKET_CODEC.encode(buf, builderList.getFirst().simpleStack);
             PacketSender.s2c(player).send(GAMEPLAY_SENDER, buf);
             return;
         } else if (builderList.isEmpty()){
@@ -88,7 +90,7 @@ public class GameplayLootTableSender implements LootSender<GameplayLootPoolBuild
 
                 //for each itemstack, write the stack and weight
                 keyPoolMap.forEach((stack,weight)->{
-                    buf.writeItemStack(stack);
+                    ItemStack.PACKET_CODEC.encode(buf, stack);
                     buf.writeFloat(weight);
                 });
             });

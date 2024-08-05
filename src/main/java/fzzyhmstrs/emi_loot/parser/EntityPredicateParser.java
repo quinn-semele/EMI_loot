@@ -33,13 +33,13 @@ public class EntityPredicateParser {
         }
 
         //location check
-        Optional<LocationPredicate> locationPredicate = predicate.location();
+        Optional<LocationPredicate> locationPredicate = predicate.location().located();
         if (locationPredicate.isPresent()){
             return LocationPredicateParser.parseLocationPredicate(locationPredicate.get());
         }
 
         //stepping on check
-        Optional<LocationPredicate> steppingOnPredicate = predicate.steppingOn();
+        Optional<LocationPredicate> steppingOnPredicate = predicate.location().steppingOn();
         if (steppingOnPredicate.isPresent()){
             return LocationPredicateParser.parseLocationPredicate(locationPredicate.get());
         }
@@ -69,7 +69,7 @@ public class EntityPredicateParser {
         }
 
         //Type Specific checks
-        Optional<TypeSpecificPredicate> typeSpecificPredicate = predicate.typeSpecific();
+        Optional<EntitySubPredicate> typeSpecificPredicate = predicate.typeSpecific();
         if (typeSpecificPredicate.isPresent()){
             return TypeSpecificPredicateParser.parseTypeSpecificPredicate(typeSpecificPredicate.get());
         }

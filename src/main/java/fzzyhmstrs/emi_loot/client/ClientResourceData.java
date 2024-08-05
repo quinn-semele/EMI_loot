@@ -16,7 +16,7 @@ import net.minecraft.resource.SynchronousResourceReloader;
 import net.minecraft.util.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 import org.joml.Vector3f;
 
@@ -24,7 +24,7 @@ import java.io.BufferedReader;
 import java.util.HashMap;
 import java.util.Map;
 
-@Mod.EventBusSubscriber(modid = EMILoot.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+@EventBusSubscriber(modid = EMILoot.MOD_ID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ClientResourceData {
 
     public static final Object2IntMap<EntityType<?>> MOB_OFFSETS = new Object2IntOpenHashMap<>();
@@ -57,7 +57,7 @@ public class ClientResourceData {
                 JsonObject json = JsonParser.parseReader(reader).getAsJsonObject();
                 json.entrySet().forEach((entry)->{
                     JsonElement element = entry.getValue();
-                    Identifier mobId = new Identifier(entry.getKey());
+                    Identifier mobId = Identifier.of(entry.getKey());
                     if (Registries.ENTITY_TYPE.containsId(mobId)) {
                         if (element.isJsonObject()) {
                             JsonObject object = element.getAsJsonObject();

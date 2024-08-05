@@ -10,6 +10,7 @@ import com.google.gson.JsonParser;
 import fzzyhmstrs.emi_loot.EMILoot;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.LootTables;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
@@ -20,7 +21,7 @@ import java.util.*;
 public class ServerResourceData {
 
     public static final Multimap<Identifier, LootTable> DIRECT_DROPS = Multimaps.newMultimap(Maps.newLinkedHashMap(), ArrayList::new);
-    public static final List<Identifier> SHEEP_TABLES;
+    public static final List<RegistryKey<LootTable>> SHEEP_TABLES;
     public static final List<Identifier> TABLE_EXCLUSIONS = new LinkedList<>();
     private static final Gson GSON = new Gson();
     private static final int DIRECT_DROPS_PATH_LENGTH = "direct_drops/".length();
@@ -35,7 +36,7 @@ public class ServerResourceData {
     private static void loadDirectTable(Identifier id, Resource resource){
         if (EMILoot.DEBUG) EMILoot.LOGGER.info("Reading direct drop table from file: " + id.toString());
         String path = id.getPath();
-        Identifier id2 = new Identifier(id.getNamespace(), path.substring(DIRECT_DROPS_PATH_LENGTH, path.length() - FILE_SUFFIX_LENGTH));
+        Identifier id2 = Identifier.of(id.getNamespace(), path.substring(DIRECT_DROPS_PATH_LENGTH, path.length() - FILE_SUFFIX_LENGTH));
         String path2 = id2.getPath();
         if (!(path2.startsWith("blocks/") || path2.startsWith("entities/"))){
             EMILoot.LOGGER.error("File path for [" + id + "] not correct; needs a 'blocks' or 'entities' subfolder. Skipping.");
@@ -65,7 +66,7 @@ public class ServerResourceData {
             if (list != null && list.isJsonArray()){
                 list.getAsJsonArray().forEach(element -> {
                     if (element.isJsonPrimitive()){
-                        Identifier identifier = new Identifier(element.getAsString());
+                        Identifier identifier = Identifier.of(element.getAsString());
                         if (EMILoot.DEBUG) EMILoot.LOGGER.info("Adding exclusion: " + identifier);
                         TABLE_EXCLUSIONS.add(identifier);
                     } else {
@@ -95,7 +96,7 @@ public class ServerResourceData {
     }
 
     static{
-        Identifier[] ids = {
+        SHEEP_TABLES = List.of(
                 LootTables.WHITE_SHEEP_ENTITY,
                 LootTables.ORANGE_SHEEP_ENTITY,
                 LootTables.MAGENTA_SHEEP_ENTITY,
@@ -112,7 +113,6 @@ public class ServerResourceData {
                 LootTables.GREEN_SHEEP_ENTITY,
                 LootTables.RED_SHEEP_ENTITY,
                 LootTables.BLACK_SHEEP_ENTITY
-        };
-        SHEEP_TABLES = Arrays.stream(ids).toList();
+        );
     }
 }

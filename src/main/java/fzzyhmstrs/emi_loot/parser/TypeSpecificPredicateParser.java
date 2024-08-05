@@ -23,7 +23,7 @@ import java.util.Optional;
 
 public class TypeSpecificPredicateParser {
 
-    public static Text parseTypeSpecificPredicate(TypeSpecificPredicate predicate){
+    public static Text parseTypeSpecificPredicate(EntitySubPredicate predicate){
         if (predicate instanceof LightningBoltPredicate){
             return parseLightningBoltPredicate((LightningBoltPredicate)predicate);
         }

@@ -22,7 +22,7 @@ public class BlockPredicateParser {
     }
 
     private static Text parseBlockPredicateInternal(BlockPredicate predicate){
-        Optional<TagKey<Block>> tag = predicate.tag();
+        Optional<TagKey<Block>> tag = predicate.blocks().flatMap(RegistryEntryList::getTagKey);
         if (tag.isPresent()){
             return LText.translatable("emi_loot.block_predicate.tag",tag.get().id().toString());
         }

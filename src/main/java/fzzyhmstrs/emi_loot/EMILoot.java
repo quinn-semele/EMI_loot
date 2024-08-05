@@ -4,17 +4,11 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import fzzyhmstrs.emi_loot.parser.LootTableParser;
 import lol.bai.badpackets.api.play.PlayPackets;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentTarget;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.registry.Registries;
 import net.minecraft.util.math.random.LocalRandom;
 import net.minecraft.util.math.random.Random;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLPaths;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,7 +54,7 @@ public class EMILoot {
 
     public EMILoot(IEventBus modEventBus) {
         ENCHANTMENTS.register(modEventBus);
-        PlayPackets.registerServerReadyCallback((handler, sender, server) -> LootTableParser.registerServer(handler.getPlayer()));
+        PlayPackets.registerServerReadyCallback(context -> LootTableParser.registerServer(context.player()));
     }
     
     @SuppressWarnings("ResultOfMethodCallIgnored")

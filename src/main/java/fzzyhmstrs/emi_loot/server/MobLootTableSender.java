@@ -6,9 +6,11 @@ import io.netty.buffer.Unpooled;
 import lol.bai.badpackets.api.PacketSender;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
+import net.neoforged.neoforge.network.connection.ConnectionType;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -24,7 +26,7 @@ public class MobLootTableSender implements LootSender<MobLootPoolBuilder> {
     private final String idToSend;
     private final String mobIdToSend;
     final List<MobLootPoolBuilder> builderList = new LinkedList<>();
-    public static Identifier MOB_SENDER = new Identifier("e_l","m_s");
+    public static Identifier MOB_SENDER = Identifier.of("e_l","m_s");
     boolean isEmpty = true;
 
     @Override
@@ -50,7 +52,7 @@ public class MobLootTableSender implements LootSender<MobLootPoolBuilder> {
             if (EMILoot.DEBUG) EMILoot.LOGGER.info("avoiding empty mob: " + idToSend);
             return;
         }
-        PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+        RegistryByteBuf buf = new RegistryByteBuf(Unpooled.buffer(), player.server.getRegistryManager(), ConnectionType.NEOFORGE);
         //start with the loot pool ID and the number of builders to write
         buf.writeString(idToSend);
         buf.writeString(mobIdToSend);
@@ -58,7 +60,7 @@ public class MobLootTableSender implements LootSender<MobLootPoolBuilder> {
         if (builderList.size() == 1 && builderList.get(0).isSimple) {
             if (EMILoot.DEBUG) EMILoot.LOGGER.info("sending simple mob: " + idToSend);
             buf.writeShort(-1);
-            buf.writeRegistryValue(Registries.ITEM, builderList.get(0).simpleStack.getItem());
+            ItemStack.PACKET_CODEC.encode(buf, builderList.get(0).simpleStack);
             PacketSender.s2c(player).send(MOB_SENDER, buf);
             return;
         } else if (builderList.isEmpty()){
@@ -95,7 +97,7 @@ public class MobLootTableSender implements LootSender<MobLootPoolBuilder> {
 
                 //for each itemstack, write the stack and weight
                 keyPoolMap.forEach((stack,weight)->{
-                    buf.writeItemStack(stack);
+                    ItemStack.PACKET_CODEC.encode(buf, stack);
                     buf.writeFloat(weight);
                 });
             });

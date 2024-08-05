@@ -37,7 +37,7 @@ import java.util.Optional;
 public class MobLootRecipe implements EmiRecipe {
 
     //private final static Map<EntityType<?>,Integer> needsElevating;
-    private static final Identifier ARROW_ID = new Identifier(EMILoot.MOD_ID,"textures/gui/downturn_arrow.png");
+    private static final Identifier ARROW_ID = Identifier.of(EMILoot.MOD_ID,"textures/gui/downturn_arrow.png");
 
     public MobLootRecipe(ClientMobLootTable loot){
         this.loot = loot;
@@ -120,7 +120,7 @@ public class MobLootRecipe implements EmiRecipe {
 
     @Override
     public @Nullable Identifier getId() {
-        return new Identifier(EMILootClient.MOD_ID, "/" + getCategory().id.getPath() + "/" + loot.id.getNamespace() + "/" + loot.id.getPath());
+        return Identifier.of(EMILootClient.MOD_ID, "/" + getCategory().id.getPath() + "/" + loot.id.getNamespace() + "/" + loot.id.getPath());
     }
 
     @Override

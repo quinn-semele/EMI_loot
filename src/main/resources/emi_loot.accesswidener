@@ -23,3 +23,6 @@ accessible field net/minecraft/loot/function/SetAttributesLootFunction$Attribute
 
 # SetStewEffectLootFunction stuff
 accessible class net/minecraft/loot/function/SetStewEffectLootFunction$StewEffect
+
+# EnchantmentsPredicate stuff
+accessible method net/minecraft/predicate/item/EnchantmentsPredicate getEnchantments ()Ljava/util/List;

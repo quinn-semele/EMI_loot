@@ -3,9 +3,10 @@ package fzzyhmstrs.emi_loot.server;
 import io.netty.buffer.Unpooled;
 import lol.bai.badpackets.api.PacketSender;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
+import net.neoforged.neoforge.network.connection.ConnectionType;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -21,7 +22,7 @@ public class ChestLootTableSender implements LootSender<ChestLootPoolBuilder> {
     private final String idToSend;
     final List<ChestLootPoolBuilder> builderList = new LinkedList<>();
     HashMap<ItemStack, Float> floatMap = new HashMap<>();
-    public static Identifier CHEST_SENDER = new Identifier("e_l","c_s");
+    public static Identifier CHEST_SENDER = Identifier.of("e_l","c_s");
 
     @Override
     public void build(){
@@ -46,11 +47,11 @@ public class ChestLootTableSender implements LootSender<ChestLootPoolBuilder> {
     @Override
     public void send(ServerPlayerEntity player) {
         if (!PacketSender.s2c(player).canSend(CHEST_SENDER)) return;
-        PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+        RegistryByteBuf buf = new RegistryByteBuf(Unpooled.buffer(), player.server.getRegistryManager(), ConnectionType.NEOFORGE);
         buf.writeString(idToSend);
         buf.writeShort(floatMap.size());
         floatMap.forEach((item, floatWeight) -> {
-            buf.writeItemStack(item);
+            ItemStack.PACKET_CODEC.encode(buf, item);
             buf.writeFloat(floatWeight);
         });
         PacketSender.s2c(player).send(CHEST_SENDER, buf);

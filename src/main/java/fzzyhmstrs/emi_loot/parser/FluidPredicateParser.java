@@ -6,7 +6,7 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.predicate.FluidPredicate;
 import net.minecraft.predicate.StatePredicate;
 import net.minecraft.registry.Registries;
-import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.text.Text;
 
@@ -20,14 +20,14 @@ public class FluidPredicateParser {
 
     private static Text parseFluidPredicateInternal(FluidPredicate predicate){
 
-        Optional<TagKey<Fluid>> tag = predicate.tag();
+        Optional<TagKey<Fluid>> tag = predicate.fluids().flatMap(RegistryEntryList::getTagKey);
         if (tag.isPresent()){
             return LText.translatable("emi_loot.fluid_predicate.tag",tag.get().id().toString());
         }
 
-        Optional<RegistryEntry<Fluid>> fluid = predicate.fluid();
-        if (fluid.isPresent()){
-            return LText.translatable("emi_loot.fluid_predicate.fluid", Registries.FLUID.getId(fluid.get().value()).toString());
+        Optional<RegistryEntryList<Fluid>> fluids = predicate.fluids();
+        if (fluids.isPresent()){
+            return LText.translatable("emi_loot.fluid_predicate.fluid", Registries.FLUID.getId(fluids.get().value()).toString());
         }
 
         Optional<StatePredicate> statePredicate = predicate.state();

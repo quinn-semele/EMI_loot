@@ -1,17 +1,19 @@
 package fzzyhmstrs.emi_loot.util;
 
 import fzzyhmstrs.emi_loot.EMILoot;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.recipe.RecipeEntry;
-import net.minecraft.recipe.RecipeType;
-import net.minecraft.recipe.SmeltingRecipe;
-import net.minecraft.recipe.input.SingleStackRecipeInput;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
-import net.minecraft.world.World;
+import fzzyhmstrs.emi_loot.util.cleancode.Identifier;
+import fzzyhmstrs.emi_loot.util.cleancode.Text;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.SingleRecipeInput;
+import net.minecraft.world.item.crafting.SmeltingRecipe;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -21,14 +23,14 @@ public record TextKey(int index, List<String> args){
 
     static final Map<String, Integer> keyMap = new HashMap<>();
     static final Map<Integer,String> keyReverseMap = new HashMap<>();
-    static final Map<Integer, Function<TextKey, Text>> keyTextBuilderMap = new HashMap<>();
-    static final Map<Integer, Identifier> keySpriteIdMap = new HashMap<>();
-    static final Function<TextKey, Text> DEFAULT_FUNCTION = (key)-> LText.translatable("emi_loot.missing_key");
-    static final Identifier EMPTY = Identifier.of(EMILoot.MOD_ID,"textures/gui/empty.png");
+    static final Map<Integer, Function<TextKey, Component>> keyTextBuilderMap = new HashMap<>();
+    static final Map<Integer, ResourceLocation> keySpriteIdMap = new HashMap<>();
+    static final Function<TextKey, Component> DEFAULT_FUNCTION = (key)-> Text.translatable("emi_loot.missing_key");
+    static final ResourceLocation EMPTY = Identifier.of(EMILoot.MOD_ID,"textures/gui/empty.png");
     static int curDynamicIndex = 1000;
 
     static{
-        mapBuilder(0,"emi_loot.function.empty",(key)->LText.empty(), EMPTY);
+        mapBuilder(0,"emi_loot.function.empty",(key)-> Text.empty(), EMPTY);
         mapBuilder(1,"emi_loot.function.bonus",(key)-> getOneArgText(1, key), Identifier.of(EMILoot.MOD_ID,"textures/gui/bonus.png"));
         mapBuilder(2,"emi_loot.function.potion",(key) -> getOneArgText(2, key), Identifier.of(EMILoot.MOD_ID,"textures/gui/potion.png"));
         mapBuilder(3,"emi_loot.function.set_count_add",(key)-> getBasicText(3), Identifier.of(EMILoot.MOD_ID,"textures/gui/set_count_add.png"));
@@ -114,14 +116,14 @@ public record TextKey(int index, List<String> args){
         mapBuilder(150,"emi_loot.no_conditions",(key)-> getBasicText(150), EMPTY);
     }
 
-    private static void mapBuilder(int index, String key, Function<TextKey, Text> function, Identifier spriteId){
+    private static void mapBuilder(int index, String key, Function<TextKey, Component> function, ResourceLocation spriteId){
         keyMap.put(key,index);
         keyReverseMap.put(index,key);
         keyTextBuilderMap.put(index,function);
         keySpriteIdMap.put(index, spriteId);
     }
     
-    public static void register(String key, int args, Identifier sprite){
+    public static void register(String key, int args, ResourceLocation sprite){
         if (keyMap.containsKey(key)) throw new IllegalArgumentException("Text key [" + key + "] already registered!");
         if (!sprite.toString().contains(".png")) throw new IllegalArgumentException("Text key [" + key + "] registered with sprite identifier [" + sprite + "] that isn't a png!)");
         int index = curDynamicIndex;
@@ -134,12 +136,12 @@ public record TextKey(int index, List<String> args){
         }
     }
 
-    private static Text getBasicText(int index){
+    private static Component getBasicText(int index){
         String translationKey = keyReverseMap.getOrDefault(index, "emi_loot.missing_key");
-        return LText.translatable(translationKey);
+        return Text.translatable(translationKey);
     }
 
-    private static Text getOneArgText(int index, TextKey key){
+    private static Component getOneArgText(int index, TextKey key){
         String translationKey = keyReverseMap.getOrDefault(index, "emi_loot.missing_key");
         String arg;
         try{
@@ -148,10 +150,10 @@ public record TextKey(int index, List<String> args){
             e.printStackTrace();
             arg = "Missing";
         }
-        return LText.translatable(translationKey, arg);
+        return Text.translatable(translationKey, arg);
     }
 
-    private static Text getTwoArgText(int index, TextKey key){
+    private static Component getTwoArgText(int index, TextKey key){
         String translationKey = keyReverseMap.getOrDefault(index, "emi_loot.missing_key");
         String arg1;
         String arg2;
@@ -167,28 +169,28 @@ public record TextKey(int index, List<String> args){
             e.printStackTrace();
             arg2 = "Missing";
         }
-        return LText.translatable(translationKey,arg1,arg2);
+        return Text.translatable(translationKey,arg1,arg2);
     }
 
-    private static Text getAlternates3Text(int index, TextKey key){
+    private static Component getAlternates3Text(int index, TextKey key){
         String translationKey = keyReverseMap.getOrDefault(index, "emi_loot.missing_key");
-        MutableText finalText = LText.empty();
+        MutableComponent finalText = Text.empty();
         List<String> args = key.args;
         int size = args.size();
         for (int i = 0;i<size;i++){
             String arg = args.get(i);
             if (i == (size - 2)){
-                finalText.append(LText.translatable("emi_loot.condition.alternates_3a", arg));
+                finalText.append(Text.translatable("emi_loot.condition.alternates_3a", arg));
             } else if (i == (size - 1)){
-                finalText.append(LText.translatable("emi_loot.condition.alternates", arg));
+                finalText.append(Text.translatable("emi_loot.condition.alternates", arg));
             } else {
-                finalText.append(LText.translatable(translationKey,arg));
+                finalText.append(Text.translatable(translationKey,arg));
             }
         }
         return finalText;
     }
     
-    private static Text getInvertedText(int index, TextKey key){
+    private static Component getInvertedText(int index, TextKey key){
         String translationKey = keyReverseMap.getOrDefault(index, "emi_loot.missing_key");
         String arg;
         try{
@@ -197,7 +199,7 @@ public record TextKey(int index, List<String> args){
             e.printStackTrace();
             arg = "Missing";
         }
-        return LText.translatable(translationKey, arg).formatted(Formatting.RED);
+        return Text.translatable(translationKey, arg).withStyle(ChatFormatting.RED);
     }
 
     public boolean isNotEmpty(){
@@ -212,7 +214,7 @@ public record TextKey(int index, List<String> args){
         return keyReverseMap.getOrDefault(index,"emi_loot.function.empty");
     }
                                                                                     
-    public static Identifier getSpriteId(int index){
+    public static ResourceLocation getSpriteId(int index){
         return keySpriteIdMap.getOrDefault(index,EMPTY);
     }
 
@@ -245,15 +247,15 @@ public record TextKey(int index, List<String> args){
         return TextKey.of(key,Collections.singletonList(arg));
     }
 
-    public TextKeyResult process(ItemStack stack, @Nullable World world){
+    public TextKeyResult process(ItemStack stack, @Nullable Level world){
         ItemStack finalStack;
         List<ItemStack> finalStacks = new LinkedList<>();
         //finalStacks.add(stack);
         if (this.index == 8 && world != null){
-            Optional<RecipeEntry<SmeltingRecipe>> opt = world.getRecipeManager().getFirstMatch(RecipeType.SMELTING,new SingleStackRecipeInput(stack),world);
+            Optional<RecipeHolder<SmeltingRecipe>> opt = world.getRecipeManager().getRecipeFor(RecipeType.SMELTING,new SingleRecipeInput(stack),world);
             if (opt.isPresent()){
                 // Since AbstractCookingRecipe doesn't use the registryManager we can safely pass null here
-                ItemStack tempStack = opt.get().value().getResult(null);
+                ItemStack tempStack = opt.get().value().getResultItem(null);
                 if (!tempStack.isEmpty()) {
                     //System.out.println(tempStack);
                     finalStack = tempStack.copy();
@@ -265,25 +267,25 @@ public record TextKey(int index, List<String> args){
         } else {
             finalStacks.add(stack);
         }
-        Text text = keyTextBuilderMap.getOrDefault(this.index,DEFAULT_FUNCTION).apply(this);
+        Component text = keyTextBuilderMap.getOrDefault(this.index,DEFAULT_FUNCTION).apply(this);
         return new TextKeyResult(text,finalStacks);
     }
                                                                                     
-    public record TextKeyResult(Text text,List<ItemStack> stacks){}
+    public record TextKeyResult(Component text,List<ItemStack> stacks){}
 
-    public static TextKey fromBuf(PacketByteBuf buf){
+    public static TextKey fromBuf(FriendlyByteBuf buf){
         int key = buf.readVarInt();
         int size = buf.readByte();
         List<String> args = new LinkedList<>();
         if (size > 0) {
             for (int i = 0; i < size; i++) {
-                args.add(buf.readString());
+                args.add(buf.readUtf());
             }
         }
         return new TextKey(key,args);
     }
 
-    public void toBuf(PacketByteBuf buf){
+    public void toBuf(FriendlyByteBuf buf){
         buf.writeVarInt(this.index);
         if (args.isEmpty()){
             buf.writeByte(0);
@@ -292,7 +294,7 @@ public record TextKey(int index, List<String> args){
             buf.writeByte(args.size());
             for (int i = 0; i< argSize; i++){
                 String string = args.get(i);
-                buf.writeString(string);
+                buf.writeUtf(string);
             }
         }
     }

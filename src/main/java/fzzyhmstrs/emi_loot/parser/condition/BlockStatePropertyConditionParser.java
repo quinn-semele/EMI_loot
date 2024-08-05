@@ -2,7 +2,7 @@ package fzzyhmstrs.emi_loot.parser.condition;
 
 import fzzyhmstrs.emi_loot.parser.LootTableParser;
 import fzzyhmstrs.emi_loot.parser.StatePredicateParser;
-import fzzyhmstrs.emi_loot.util.LText;
+import fzzyhmstrs.emi_loot.util.cleancode.Text;
 import fzzyhmstrs.emi_loot.util.TextKey;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
@@ -21,7 +21,7 @@ public class BlockStatePropertyConditionParser implements ConditionParser{
         MutableText bsText;
         Block block = ((BlockStatePropertyLootCondition)condition).block().value();
         if (block != null){
-            bsText = LText.translatable("emi_loot.condition.blockstate.block",block.getName().getString());
+            bsText = Text.translatable("emi_loot.condition.blockstate.block",block.getName().getString());
         } else {
             StatePredicate predicate = ((BlockStatePropertyLootCondition)condition).properties().orElseThrow(); // TODO?
             bsText = (MutableText) StatePredicateParser.parseStatePredicate(predicate);

@@ -6,11 +6,12 @@ import dev.emi.emi.api.widget.Bounds;
 import dev.emi.emi.api.widget.SlotWidget;
 import dev.emi.emi.api.widget.Widget;
 import fzzyhmstrs.emi_loot.client.ClientBuiltPool;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.tooltip.TooltipComponent;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.text.Text;
-import net.minecraft.util.Pair;
+import fzzyhmstrs.emi_loot.util.cleancode.Text;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.Tuple;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -25,10 +26,10 @@ public class IconGroupEmiWidget extends Widget {
         this.y = y;
         List<IconEmiWidget> list = new LinkedList<>();
         for (int i = 0; i < pool.list().size(); i++){
-            Pair<Integer, Text> pair = pool.list().get(i);
+            Tuple<Integer, Component> pair = pool.list().get(i);
             int xOffset = i / 2 * 11;
             int yOffset = i % 2 * 11;
-            list.add(new IconEmiWidget(x + xOffset, y + yOffset,pair.getLeft(),pair.getRight()));
+            list.add(new IconEmiWidget(x + xOffset, y + yOffset,pair.getA(),pair.getB()));
         }
         this.icons = list;
         this.iconsWidth = 12 + (((icons.size() - 1)/2) * 11);
@@ -39,7 +40,7 @@ public class IconGroupEmiWidget extends Widget {
         int itemXOffset = iconsWidth + 2;
         for(Map.Entry<Float, EmiIngredient> entry: pool.stackMap().float2ObjectEntrySet()){
             String rounded = FloatTrimmer.trimFloatString(entry.getKey());
-            SlotWidget widget = new SlotWidget(entry.getValue(),itemXOffset + x,y + 3).appendTooltip(LText.translatable("emi_loot.percent_chance",rounded));
+            SlotWidget widget = new SlotWidget(entry.getValue(),itemXOffset + x,y + 3).appendTooltip(Text.translatable("emi_loot.percent_chance",rounded));
             itemXOffset +=20;
             list2.add(widget);
         }
@@ -62,7 +63,7 @@ public class IconGroupEmiWidget extends Widget {
     }
 
     @Override
-    public List<TooltipComponent> getTooltip(int mouseX, int mouseY){
+    public List<ClientTooltipComponent> getTooltip(int mouseX, int mouseY){
         for (IconEmiWidget icon : icons){
             if (icon.getBounds().contains(mouseX,mouseY)) return icon.getTooltip(mouseX, mouseY);
         }
@@ -88,17 +89,17 @@ public class IconGroupEmiWidget extends Widget {
     }
 
     @Override
-    public void render(DrawContext draw, int mouseX, int mouseY, float delta) {
+    public void render(GuiGraphics draw, int mouseX, int mouseY, float delta) {
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         int widthRemaining = itemsWidth;
         int xNew = x + iconsWidth;
         do{
             int newWidth = Math.min(64,widthRemaining);
-            draw.drawTexture(FRAME_ID, xNew, y, newWidth, 1, 0, 0, newWidth, 1, 64, 16);
+            draw.blit(FRAME_ID, xNew, y, newWidth, 1, 0, 0, newWidth, 1, 64, 16);
             xNew += newWidth;
             widthRemaining -= newWidth;
         } while (widthRemaining > 0);
-        draw.fill(RenderLayer.getGui(),x,x + width,y,y+1,0x555555);
+        draw.fill(RenderType.gui(),x,x + width,y,y+1,0x555555);
         for (IconEmiWidget icon: icons){
             icon.render(draw, mouseX, mouseY, delta);
         }

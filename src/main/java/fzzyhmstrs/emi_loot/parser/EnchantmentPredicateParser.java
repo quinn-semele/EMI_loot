@@ -2,7 +2,7 @@ package fzzyhmstrs.emi_loot.parser;
 
 import fzzyhmstrs.emi_loot.EMILoot;
 import fzzyhmstrs.emi_loot.parser.processor.ListProcessors;
-import fzzyhmstrs.emi_loot.util.LText;
+import fzzyhmstrs.emi_loot.util.cleancode.Text;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.predicate.item.EnchantmentPredicate;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -27,9 +27,9 @@ public class EnchantmentPredicateParser{
             }
         }
         if (!list2.isEmpty()){
-            return LText.translatable("emi_loot.item_predicate.enchant", ListProcessors.buildAndList(list2));
+            return Text.translatable("emi_loot.item_predicate.enchant", ListProcessors.buildAndList(list2));
         }
         if (EMILoot.DEBUG) EMILoot.LOGGER.warn("Empty or unparsable enchantment predicate in table: "  + LootTableParser.currentTable);
-        return LText.translatable("emi_loot.predicate.invalid");
+        return Text.translatable("emi_loot.predicate.invalid");
     }
 }

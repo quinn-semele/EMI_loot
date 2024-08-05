@@ -3,20 +3,22 @@ package fzzyhmstrs.emi_loot.client;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import fzzyhmstrs.emi_loot.EMILoot;
-import fzzyhmstrs.emi_loot.util.LText;
+import fzzyhmstrs.emi_loot.util.cleancode.Identifier;
+import fzzyhmstrs.emi_loot.util.cleancode.Text;
 import fzzyhmstrs.emi_loot.util.TextKey;
 import io.netty.handler.codec.DecoderException;
 import it.unimi.dsi.fastutil.floats.Float2ObjectArrayMap;
 import it.unimi.dsi.fastutil.floats.Float2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2FloatMap;
 import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
-import net.minecraft.block.Block;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.Pair;
-import net.minecraft.world.World;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Tuple;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -37,37 +39,37 @@ abstract public class AbstractTextKeyParsingClientLootTable<T extends LootReceiv
     private final Map<List<TextKey>, ClientRawPool> rawItems;
     public List<ClientBuiltPool> builtItems;
 
-    static Identifier getIdFromBuf(PacketByteBuf buf){
-        String idToParse = buf.readString();
+    static ResourceLocation getIdFromBuf(FriendlyByteBuf buf){
+        String idToParse = buf.readUtf();
         if (idToParse.contains(":")){
             return Identifier.of(idToParse);
         } else if (idToParse.startsWith("b/")){
-            return Identifier.of("blocks/" + idToParse.substring(2));
+            return Identifier.ofVanilla("blocks/" + idToParse.substring(2));
         } else if (idToParse.startsWith("e/")){
-            return Identifier.of("entities/" + idToParse.substring(2));
+            return Identifier.ofVanilla("entities/" + idToParse.substring(2));
         } else if (idToParse.startsWith("c/")){
-            return Identifier.of("chests/" + idToParse.substring(2));
+            return Identifier.ofVanilla("chests/" + idToParse.substring(2));
         } else if (idToParse.startsWith("g/")){
-            return Identifier.of("gameplay/" + idToParse.substring(2));
+            return Identifier.ofVanilla("gameplay/" + idToParse.substring(2));
         } else if (idToParse.startsWith("a/")) {
-            return Identifier.of("archaeology/" + idToParse.substring(2));
+            return Identifier.ofVanilla("archaeology/" + idToParse.substring(2));
         } else {
-            return Identifier.of(idToParse);
+            return Identifier.ofVanilla(idToParse);
         }
     }
 
-    abstract List<Pair<Integer, Text>> getSpecialTextKeyList(World world, Block block);
+    abstract List<Tuple<Integer, Component>> getSpecialTextKeyList(Level world, Block block);
 
-    public void build(World world, Block block){
-        Map<List<Pair<Integer,Text>>, Object2FloatMap<ItemStack>> builderItems = new HashMap<>();
+    public void build(Level world, Block block){
+        Map<List<Tuple<Integer,Component>>, Object2FloatMap<ItemStack>> builderItems = new HashMap<>();
         rawItems.forEach((list,pool)->{
-            List<Pair<Integer,Text>> applyToAllList = new LinkedList<>(getSpecialTextKeyList(world, block));
+            List<Tuple<Integer,Component>> applyToAllList = new LinkedList<>(getSpecialTextKeyList(world, block));
             list.forEach((textKey) -> {
-                Text text = textKey.process(ItemStack.EMPTY,world).text();
-                applyToAllList.add(new Pair<>(textKey.index(),text));
+                Component text = textKey.process(ItemStack.EMPTY,world).text();
+                applyToAllList.add(new Tuple<>(textKey.index(),text));
             });
             pool.map().forEach((poolList,poolItemMap)->{
-                List<Pair<Integer,Text>> newPoolList = new LinkedList<>();
+                List<Tuple<Integer,Component>> newPoolList = new LinkedList<>();
                 Object2FloatMap<ItemStack> itemsToAdd = new Object2FloatOpenHashMap<>();
                 List<ItemStack> itemsToRemove = new LinkedList<>();
 
@@ -92,14 +94,14 @@ abstract public class AbstractTextKeyParsingClientLootTable<T extends LootReceiv
                         });
 
                     });
-                    Text text = textKey.process(ItemStack.EMPTY,world).text();
-                    newPoolList.add(new Pair<>(textKey.index(),text));
+                    Component text = textKey.process(ItemStack.EMPTY,world).text();
+                    newPoolList.add(new Tuple<>(textKey.index(),text));
 
                 });
-                List<Pair<Integer, Text>> summedList = new LinkedList<>(applyToAllList);
+                List<Tuple<Integer, Component>> summedList = new LinkedList<>(applyToAllList);
                 summedList.addAll(newPoolList);
                 if (summedList.isEmpty()){
-                    summedList.add(new Pair<>(TextKey.getIndex("emi_loot.no_conditions"), LText.translatable("emi_loot.no_conditions")));
+                    summedList.add(new Tuple<>(TextKey.getIndex("emi_loot.no_conditions"), Text.translatable("emi_loot.no_conditions")));
                 }
                 Object2FloatMap<ItemStack> builderPoolMap = builderItems.getOrDefault(summedList, poolItemMap);
                 builderPoolMap.putAll(itemsToAdd);
@@ -131,20 +133,20 @@ abstract public class AbstractTextKeyParsingClientLootTable<T extends LootReceiv
         builtItems = finalList;
     }
 
-    abstract Pair<Identifier,Identifier> getBufId(PacketByteBuf buf);
+    abstract Tuple<Identifier,Identifier> getBufId(FriendlyByteBuf buf);
 
-    abstract T simpleTableToReturn(Pair<Identifier,Identifier> ids,PacketByteBuf buf);
+    abstract T simpleTableToReturn(Tuple<Identifier,Identifier> ids,FriendlyByteBuf buf);
 
     abstract T emptyTableToReturn();
 
-    abstract T filledTableToReturn(Pair<Identifier,Identifier> ids, Map<List<TextKey>, ClientRawPool> itemMap);
+    abstract T filledTableToReturn(Tuple<Identifier,Identifier> ids, Map<List<TextKey>, ClientRawPool> itemMap);
 
     @Override
-    public LootReceiver fromBuf(PacketByteBuf buf) {
+    public LootReceiver fromBuf(RegistryFriendlyByteBuf buf) {
         boolean isEmpty = true;
 
-        Pair<Identifier,Identifier> ids = getBufId(buf);
-        Identifier id = ids.getLeft();
+        Tuple<Identifier,Identifier> ids = getBufId(buf);
+        Identifier id = ids.getA();
         if (EMILoot.DEBUG) EMILoot.LOGGER.info("parsing table " + id);
         int builderCount = buf.readShort();
         if (builderCount == -1){
@@ -199,7 +201,7 @@ abstract public class AbstractTextKeyParsingClientLootTable<T extends LootReceiv
 
                 int pileItemSize = buf.readShort();
                 for (int j = 0; j < pileItemSize; j++) {
-                    ItemStack stack = buf.readItemStack();
+                    ItemStack stack = ItemStack.STREAM_CODEC.decode(buf);
                     float weight = buf.readFloat();
                     pileItemMap.put(stack,weight);
                     isEmpty = false;

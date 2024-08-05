@@ -5,8 +5,8 @@ import it.unimi.dsi.fastutil.objects.Object2FloatMap;
 import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -42,7 +42,7 @@ public class ChestLootPoolBuilder extends AbstractLootPoolBuilder {
         }
         Object2FloatMap<ItemStack> floatMap = new Object2FloatOpenHashMap<>();
         map.forEach((item, itemWeight)-> {
-            if (!item.isOf(Items.AIR)) {
+            if (!item.is(Items.AIR)) {
                 floatMap.put(item, (itemWeight.floatValue() / totalWeight * 100F * rollWeight));
             }
         });

@@ -1,7 +1,7 @@
 package fzzyhmstrs.emi_loot.parser;
 
 import fzzyhmstrs.emi_loot.EMILoot;
-import fzzyhmstrs.emi_loot.util.LText;
+import fzzyhmstrs.emi_loot.util.cleancode.Text;
 import net.minecraft.predicate.entity.EntityEquipmentPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.text.Text;
@@ -41,6 +41,6 @@ public class EntityEquipmentPredicateParser{
             return ItemPredicateParser.parseItemPredicate(offhand.get());
         }
         if (EMILoot.DEBUG) EMILoot.LOGGER.warn("Empty or unparsable equipment predicate in table: "  + LootTableParser.currentTable);
-        return LText.translatable("emi_loot.predicate.invalid");
+        return Text.translatable("emi_loot.predicate.invalid");
     }
 }

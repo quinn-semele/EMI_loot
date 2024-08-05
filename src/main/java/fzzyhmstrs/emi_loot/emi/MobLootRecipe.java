@@ -13,7 +13,7 @@ import fzzyhmstrs.emi_loot.client.ClientMobLootTable;
 import fzzyhmstrs.emi_loot.client.ClientResourceData;
 import fzzyhmstrs.emi_loot.util.EntityEmiStack;
 import fzzyhmstrs.emi_loot.util.IconGroupEmiWidget;
-import fzzyhmstrs.emi_loot.util.LText;
+import fzzyhmstrs.emi_loot.util.cleancode.Text;
 import fzzyhmstrs.emi_loot.util.WidgetRowBuilder;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
@@ -58,8 +58,8 @@ public class MobLootRecipe implements EmiRecipe {
             }
             if (entity instanceof SheepEntity && !Objects.equals(loot.color, "")){
                 DyeColor color = DyeColor.byName(loot.color,DyeColor.WHITE);
-                MutableText colorName = LText.translatable("color.minecraft." + color.getName());
-                name = LText.translatable("emi_loot.color_name",colorName.getString(),entity.getName().getString());
+                MutableText colorName = Text.translatable("color.minecraft." + color.getName());
+                name = Text.translatable("emi_loot.color_name",colorName.getString(),entity.getName().getString());
                 ((SheepEntity)entity).setColor(color);
 
             } else {
@@ -72,7 +72,7 @@ public class MobLootRecipe implements EmiRecipe {
             inputStack = EntityEmiStack.ofScaled(entity,scale);
         } else{
             inputStack = EmiStack.EMPTY;
-            name = LText.translatable("emi_loot.missing_entity");
+            name = Text.translatable("emi_loot.missing_entity");
         }
         List<EmiStack> list = new LinkedList<>();
         //System.out.println(getId());

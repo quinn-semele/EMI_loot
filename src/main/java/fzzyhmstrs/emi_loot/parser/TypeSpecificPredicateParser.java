@@ -3,7 +3,7 @@ package fzzyhmstrs.emi_loot.parser;
 import fzzyhmstrs.emi_loot.EMILoot;
 import fzzyhmstrs.emi_loot.parser.processor.ListProcessors;
 import fzzyhmstrs.emi_loot.parser.processor.NumberProcessors;
-import fzzyhmstrs.emi_loot.util.LText;
+import fzzyhmstrs.emi_loot.util.cleancode.Text;
 import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
 import net.minecraft.entity.passive.CatVariant;
 import net.minecraft.entity.passive.FrogVariant;
@@ -14,7 +14,6 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.GameMode;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -44,27 +43,27 @@ public class TypeSpecificPredicateParser {
             if (variantPredicate.variant() instanceof CatVariant cat) {
                 Identifier id = Registries.CAT_VARIANT.getId(cat);
                 if (id != null){
-                    MutableText catVar = LText.translatable("emi_loot.entity_predicate.type_specific.cat." + id);
-                    return LText.translatable("emi_loot.entity_predicate.type_specific.cat",catVar.getString());
+                    MutableText catVar = Text.translatable("emi_loot.entity_predicate.type_specific.cat." + id);
+                    return Text.translatable("emi_loot.entity_predicate.type_specific.cat",catVar.getString());
                 }
             } else if (variantPredicate.variant() instanceof FrogVariant frog) {
                 Identifier id = Registries.FROG_VARIANT.getId(frog);
                 if (id != null){
-                    MutableText frogVar = LText.translatable("emi_loot.entity_predicate.type_specific.frog." + id);
-                    return LText.translatable("emi_loot.entity_predicate.type_specific.frog",frogVar.getString());
+                    MutableText frogVar = Text.translatable("emi_loot.entity_predicate.type_specific.frog." + id);
+                    return Text.translatable("emi_loot.entity_predicate.type_specific.frog",frogVar.getString());
                 }
             }
         }
 
         if (EMILoot.DEBUG) EMILoot.LOGGER.warn("Type specific predicate undefined or unparsable. Affects table: "  + LootTableParser.currentTable);
-        return LText.translatable("emi_loot.predicate.invalid");
+        return Text.translatable("emi_loot.predicate.invalid");
     }
     
     
     public static Text parseLightningBoltPredicate(LightningBoltPredicate predicate){
         NumberRange.IntRange blocksSetOnFire = predicate.blocksSetOnFire();
         if (!blocksSetOnFire.equals(NumberRange.IntRange.ANY)){
-            return LText.translatable(
+            return Text.translatable(
                     "emi_loot.entity_predicate.type_specific.lightning",
                     NumberProcessors.processNumberRange(
                         blocksSetOnFire,
@@ -79,28 +78,28 @@ public class TypeSpecificPredicateParser {
 
         Optional<EntityPredicate> entityStruck = predicate.entityStruck();
         if(entityStruck.isPresent()){
-            return LText.translatable(
+            return Text.translatable(
                     "emi_loot.entity_predicate.type_specific.lightning",
-                    LText.translatable(
+                    Text.translatable(
                         "emi_loot.entity_predicate.type_specific.lightning.struck",
                         EntityPredicateParser.parseEntityPredicate(entityStruck.get()).getString()
                     )
             );
         }
         if (EMILoot.DEBUG) EMILoot.LOGGER.warn("Lightning bolt predicate empty or unparsable. Affects table: "  + LootTableParser.currentTable);
-        return LText.translatable("emi_loot.predicate.invalid");
+        return Text.translatable("emi_loot.predicate.invalid");
     }
     
     
     public static Text parseFishingHookPredicate(FishingHookPredicate predicate){
         Optional<Boolean> inOpenWater = predicate.inOpenWater();
-        return (inOpenWater.isPresent() && inOpenWater.get()) ? LText.translatable("emi_loot.entity_predicate.type_specific.fishing_hook_true") : LText.translatable("emi_loot.entity_predicate.type_specific.fishing_hook_false");
+        return (inOpenWater.isPresent() && inOpenWater.get()) ? Text.translatable("emi_loot.entity_predicate.type_specific.fishing_hook_true") : Text.translatable("emi_loot.entity_predicate.type_specific.fishing_hook_false");
     }
 
     public static Text parsePlayerPredicate(PlayerPredicate predicate){
         NumberRange.IntRange experienceLevel = predicate.experienceLevel();
         if (!experienceLevel.equals(NumberRange.IntRange.ANY)){
-            return LText.translatable(
+            return Text.translatable(
                     "emi_loot.entity_predicate.type_specific.player",
                     NumberProcessors.processNumberRange(
                             experienceLevel,
@@ -115,9 +114,9 @@ public class TypeSpecificPredicateParser {
 
         Optional<GameMode> gameMode = predicate.gameMode();
         if (gameMode.isPresent()){
-            return LText.translatable(
+            return Text.translatable(
                     "emi_loot.entity_predicate.type_specific.player",
-                    LText.translatable("emi_loot.entity_predicate.type_specific.player.gamemode",gameMode.get().getName()));
+                    Text.translatable("emi_loot.entity_predicate.type_specific.player.gamemode",gameMode.get().getName()));
         }
 
         List<PlayerPredicate.StatMatcher<?>> stats = predicate.stats();
@@ -137,11 +136,11 @@ public class TypeSpecificPredicateParser {
                             "emi_loot.entity_predicate.type_specific.player.stats.at_most",
                             "emi_loot.entity_predicate.type_specific.player.stats.fallback"
                     );
-                    list.add(LText.translatable("emi_loot.entity_predicate.type_specific.player.stats.type." + typeId, valueId, num));
+                    list.add(Text.translatable("emi_loot.entity_predicate.type_specific.player.stats.type." + typeId, valueId, num));
                 }
             }
             if (!list.isEmpty()) {
-                return LText.translatable(
+                return Text.translatable(
                         "emi_loot.entity_predicate.type_specific.player",
                         ListProcessors.buildAndList(list)
                 );
@@ -155,13 +154,13 @@ public class TypeSpecificPredicateParser {
                 list.add(
                         entry.getBooleanValue()
                         ?
-                        LText.translatable("emi_loot.entity_predicate.type_specific.player.recipe_true",entry.getKey())
+                        Text.translatable("emi_loot.entity_predicate.type_specific.player.recipe_true",entry.getKey())
                         :
-                        LText.translatable("emi_loot.entity_predicate.type_specific.player.recipe_false",entry.getKey())
+                        Text.translatable("emi_loot.entity_predicate.type_specific.player.recipe_false",entry.getKey())
                 );
             }
             if (!list.isEmpty()){
-                return LText.translatable(
+                return Text.translatable(
                         "emi_loot.entity_predicate.type_specific.player",
                         ListProcessors.buildAndList(list)
                 );
@@ -177,9 +176,9 @@ public class TypeSpecificPredicateParser {
                 if (advancementPredicate instanceof PlayerPredicate.CompletedAdvancementPredicate){
                     boolean done = ((PlayerPredicate.CompletedAdvancementPredicate) advancementPredicate).done();
                     if (done){
-                        list.add(LText.translatable("emi_loot.entity_predicate.type_specific.player.adv.id_true",idString));
+                        list.add(Text.translatable("emi_loot.entity_predicate.type_specific.player.adv.id_true",idString));
                     } else {
-                        list.add(LText.translatable("emi_loot.entity_predicate.type_specific.player.adv.id_false",idString));
+                        list.add(Text.translatable("emi_loot.entity_predicate.type_specific.player.adv.id_false",idString));
                     }
                 } else if (advancementPredicate instanceof PlayerPredicate.AdvancementCriteriaPredicate){
                     Object2BooleanMap<String> criteria = ((PlayerPredicate.AdvancementCriteriaPredicate) advancementPredicate).criteria();
@@ -187,34 +186,34 @@ public class TypeSpecificPredicateParser {
                         List<MutableText> list2 = new LinkedList<>();
                         for (Object2BooleanMap.Entry<String> criteriaEntry : criteria.object2BooleanEntrySet()){
                             if (criteriaEntry.getBooleanValue()){
-                                list2.add(LText.translatable("emi_loot.entity_predicate.type_specific.player.adv.crit_true",criteriaEntry.getKey()));
+                                list2.add(Text.translatable("emi_loot.entity_predicate.type_specific.player.adv.crit_true",criteriaEntry.getKey()));
                             } else {
-                                list2.add(LText.translatable("emi_loot.entity_predicate.type_specific.player.adv.crit_false",criteriaEntry.getKey()));
+                                list2.add(Text.translatable("emi_loot.entity_predicate.type_specific.player.adv.crit_false",criteriaEntry.getKey()));
                             }
                         }
-                        list.add(LText.translatable("emi_loot.entity_predicate.type_specific.player.adv.crit_base", idString, ListProcessors.buildAndList(list2)));
+                        list.add(Text.translatable("emi_loot.entity_predicate.type_specific.player.adv.crit_base", idString, ListProcessors.buildAndList(list2)));
                     }
                 }
             }
-            return LText.translatable(
+            return Text.translatable(
                     "emi_loot.entity_predicate.type_specific.player", ListProcessors.buildAndList(list));
         }
 
         Optional<EntityPredicate> entityPredicate = predicate.lookingAt();
         if (entityPredicate.isPresent()){
-            return LText.translatable(
+            return Text.translatable(
                     "emi_loot.entity_predicate.type_specific.player",
-                    LText.translatable("emi_loot.entity_predicate.type_specific.player.looking", EntityPredicateParser.parseEntityPredicate(entityPredicate.get())));
+                    Text.translatable("emi_loot.entity_predicate.type_specific.player.looking", EntityPredicateParser.parseEntityPredicate(entityPredicate.get())));
         }
         if (EMILoot.DEBUG) EMILoot.LOGGER.warn("Lightning bolt predicate empty or unparsable. Affects table: "  + LootTableParser.currentTable);
-        return LText.translatable("emi_loot.predicate.invalid");
+        return Text.translatable("emi_loot.predicate.invalid");
     }
     
     public static Text parseSlimePredicate(SlimePredicate predicate){
         NumberRange.IntRange size = predicate.size();
         if (size.equals(NumberRange.IntRange.ANY)){
             if (EMILoot.DEBUG) EMILoot.LOGGER.warn("Undefined slime size predicate in table: "  + LootTableParser.currentTable);
-            return LText.translatable("emi_loot.predicate.invalid");
+            return Text.translatable("emi_loot.predicate.invalid");
         }
         return NumberProcessors.processNumberRange(
                 size,

@@ -1,7 +1,7 @@
 package fzzyhmstrs.emi_loot.parser;
 
 import fzzyhmstrs.emi_loot.EMILoot;
-import fzzyhmstrs.emi_loot.util.LText;
+import fzzyhmstrs.emi_loot.util.cleancode.Text;
 import net.minecraft.predicate.NbtPredicate;
 import net.minecraft.predicate.entity.*;
 import net.minecraft.text.Text;
@@ -11,7 +11,7 @@ import java.util.Optional;
 public class EntityPredicateParser {
 
     public static Text parseEntityPredicate(EntityPredicate predicate){
-        return LText.translatable("emi_loot.entity_predicate.base",parseEntityPredicateInternal(predicate).getString());
+        return Text.translatable("emi_loot.entity_predicate.base",parseEntityPredicateInternal(predicate).getString());
     }
 
     private static Text parseEntityPredicateInternal(EntityPredicate predicate){
@@ -93,7 +93,7 @@ public class EntityPredicateParser {
         }
 
         if (EMILoot.DEBUG) EMILoot.LOGGER.warn("Entity predicate undefined in table: "  + LootTableParser.currentTable);
-        return LText.translatable("emi_loot.predicate.invalid");
+        return Text.translatable("emi_loot.predicate.invalid");
 
     }
 

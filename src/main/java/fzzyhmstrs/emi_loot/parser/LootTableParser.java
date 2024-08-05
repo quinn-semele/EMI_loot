@@ -6,7 +6,7 @@ import fzzyhmstrs.emi_loot.mixins.*;
 import fzzyhmstrs.emi_loot.parser.processor.NumberProcessors;
 import fzzyhmstrs.emi_loot.parser.registry.LootParserRegistry;
 import fzzyhmstrs.emi_loot.server.*;
-import fzzyhmstrs.emi_loot.util.LText;
+import fzzyhmstrs.emi_loot.util.cleancode.Text;
 import fzzyhmstrs.emi_loot.util.TextKey;
 import io.netty.buffer.Unpooled;
 import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
@@ -27,6 +27,8 @@ import net.minecraft.loot.function.LootFunction;
 import net.minecraft.loot.function.LootFunctionType;
 import net.minecraft.loot.provider.number.LootNumberProvider;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -35,6 +37,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
@@ -651,19 +654,19 @@ public class LootTableParser {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public static Text compileConditionTexts(ItemStack stack,List<LootConditionResult> results){
-        MutableText finalText = LText.empty();
+    public static Component compileConditionTexts(ItemStack stack,List<LootConditionResult> results){
+        MutableComponent finalText = Text.empty();
         int size = results.size();
         for(int i = 0; i < size;i++){
             LootConditionResult result = results.get(i);
-            Text resultText = result.text.process(stack,null).text();
+            Component resultText = result.text.process(stack,null).text();
             if (i == 0){
                 finalText = resultText.copy();
             } else {
                 finalText.append(resultText);
             }
             if (i<(size - 1)){
-                finalText.append(LText.translatable("emi_loot.and"));
+                finalText.append(Text.translatable("emi_loot.and"));
             }
         }
         return finalText;

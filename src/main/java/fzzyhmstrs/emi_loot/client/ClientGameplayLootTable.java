@@ -1,6 +1,6 @@
 package fzzyhmstrs.emi_loot.client;
 
-import fzzyhmstrs.emi_loot.util.LText;
+import fzzyhmstrs.emi_loot.util.cleancode.Text;
 import fzzyhmstrs.emi_loot.util.TextKey;
 import it.unimi.dsi.fastutil.objects.Object2FloatMap;
 import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
@@ -80,7 +80,7 @@ public class ClientGameplayLootTable extends AbstractTextKeyParsingClientLootTab
             String keyString = "emi_loot." + tool + "." + type;
             int keyIndex = TextKey.getIndex(keyString);
             if (keyIndex != -1){
-                toolNeededList.add(new Pair<>(keyIndex,LText.translatable(keyString)));
+                toolNeededList.add(new Pair<>(keyIndex, Text.translatable(keyString)));
             }
         }
         return toolNeededList;

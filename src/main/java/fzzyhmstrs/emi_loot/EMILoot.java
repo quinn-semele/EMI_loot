@@ -4,8 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import fzzyhmstrs.emi_loot.parser.LootTableParser;
 import lol.bai.badpackets.api.play.PlayPackets;
-import net.minecraft.util.math.random.LocalRandom;
-import net.minecraft.util.math.random.Random;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.levelgen.SingleThreadedRandomSource;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLPaths;
@@ -23,7 +23,7 @@ public class EMILoot {
 
     public static final String MOD_ID = "emi_loot";
     public static final Logger LOGGER = LoggerFactory.getLogger("emi_loot");
-    public static Random emiLootRandom = new LocalRandom(System.currentTimeMillis());
+    public static RandomSource emiLootRandom = new SingleThreadedRandomSource(System.currentTimeMillis());
     public static LootTableParser parser = new LootTableParser();
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
     public static EmiLootConfig config = readOrCreate();
@@ -40,14 +40,14 @@ public class EMILoot {
 
     public static final DeferredRegister<Enchantment> ENCHANTMENTS = DeferredRegister.create(Registries.ENCHANTMENT, MOD_ID);
 
-    public static final DeferredHolder<Enchantment, Enchantment> RANDOM = ENCHANTMENTS.register("random", () -> new Enchantment(Enchantment.Rarity.VERY_RARE, EnchantmentTarget.TRIDENT, EquipmentSlot.values()){
+    public static final DeferredHolder<Enchantment, Enchantment> RANDOM = ENCHANTMENTS.register("random", () -> new Enchantment(Enchantment.Rarity.VERY_RARE, EnchantmentCategory.TRIDENT, EquipmentSlot.values()){
         @Override
-        public boolean isAvailableForEnchantedBookOffer() {
+        public boolean isTradeable() {
             return false;
         }
 
         @Override
-        public boolean isAvailableForRandomSelection() {
+        public boolean isDiscoverable() {
             return false;
         }
     });

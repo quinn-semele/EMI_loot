@@ -10,9 +10,10 @@ import dev.emi.emi.api.widget.WidgetHolder;
 import fzzyhmstrs.emi_loot.EMILoot;
 import fzzyhmstrs.emi_loot.EMILootClient;
 import fzzyhmstrs.emi_loot.client.ClientArchaeologyLootTable;
-import fzzyhmstrs.emi_loot.util.LText;
+import fzzyhmstrs.emi_loot.util.cleancode.Text;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.Items;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -61,27 +62,27 @@ public class ArchaeologyLootRecipe implements EmiRecipe {
 
 		outputs = outputsList;
 		String key = "emi_loot.archaeology." + loot.id.toString();
-		MutableText text = LText.translatable(key);
+		MutableComponent text = Text.translatable(key);
 		MutableText rawTitle;
 		if(Objects.equals(text.getString(), key)) {
 			Optional<? extends ModContainer> modNameOpt = ModList.get().getModContainerById(loot.id.getNamespace());
 			if(modNameOpt.isPresent()) {
 				ModContainer modContainer = modNameOpt.get();
 				String modName = modContainer.getModInfo().getDisplayName();
-				rawTitle = LText.translatable("emi_loot.archaeology.unknown_archaeology", modName);
+				rawTitle = Text.translatable("emi_loot.archaeology.unknown_archaeology", modName);
 			} else {
-				Text unknown = LText.translatable("emi_loot.archaeology.unknown");
-				rawTitle = LText.translatable("emi_loot.archaeology.unknown_archaeology", unknown.getString());
+				Text unknown = Text.translatable("emi_loot.archaeology.unknown");
+				rawTitle = Text.translatable("emi_loot.archaeology.unknown_archaeology", unknown.getString());
 			}
 		} else {
 			rawTitle = text;
 		}
 
-		Text dots = LText.literal("...");
+		Text dots = Text.literal("...");
 		int dotsWidth = MinecraftClient.getInstance().textRenderer.getWidth(dots);
 		if(MinecraftClient.getInstance().textRenderer.getWidth(rawTitle) > 138 - dotsWidth) {
 			String trimmed = MinecraftClient.getInstance().textRenderer.trimToWidth(rawTitle.getString(), 138 - dotsWidth) + "...";
-			title = LText.literal(trimmed);
+			title = Text.literal(trimmed);
 		} else {
 			title = rawTitle;
 		}
@@ -147,7 +148,7 @@ public class ArchaeologyLootRecipe implements EmiRecipe {
 					index.getAndDecrement();
 					String fTrim = trimFloatString(weight);
 					SlotWidget slotWidget = new SlotWidget(stack, column * 18, titleSpace + row * finalRowHeight).recipeContext(this);
-					widgets.add(slotWidget.appendTooltip(LText.translatable("emi_loot.percentage", fTrim)));
+					widgets.add(slotWidget.appendTooltip(Text.translatable("emi_loot.percentage", fTrim)));
 				}
 			} else {
 				int row = (int) Math.ceil(index.get() / columns) - 1;
@@ -156,7 +157,7 @@ public class ArchaeologyLootRecipe implements EmiRecipe {
 				EmiIngredient ingredient = EmiIngredient.of(items.stream().toList());
 				String fTrim = trimFloatString(Math.max(weight / 100f, 0.01f), 2);
 				SlotWidget slotWidget = new SlotWidget(ingredient, column * 18, titleSpace + row * finalRowHeight).recipeContext(this);
-				widgets.add(slotWidget.appendTooltip(LText.translatable("emi_loot.rolls", fTrim).formatted(Formatting.ITALIC, Formatting.GOLD)));
+				widgets.add(slotWidget.appendTooltip(Text.translatable("emi_loot.rolls", fTrim).formatted(Formatting.ITALIC, Formatting.GOLD)));
 			}
 		}
 	}

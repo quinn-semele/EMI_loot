@@ -9,7 +9,7 @@ import fzzyhmstrs.emi_loot.EMILootClient;
 import fzzyhmstrs.emi_loot.client.ClientBuiltPool;
 import fzzyhmstrs.emi_loot.client.ClientGameplayLootTable;
 import fzzyhmstrs.emi_loot.util.IconGroupEmiWidget;
-import fzzyhmstrs.emi_loot.util.LText;
+import fzzyhmstrs.emi_loot.util.cleancode.Text;
 import fzzyhmstrs.emi_loot.util.WidgetRowBuilder;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
@@ -39,16 +39,16 @@ public class GameplayLootRecipe implements EmiRecipe {
         );
         outputStacks = list;
         String key = "emi_loot.gameplay." + loot.id.toString();
-        Text text = LText.translatable(key);
+        Text text = Text.translatable(key);
         if (Objects.equals(text.getString(), key)){
             Optional<? extends ModContainer> modNameOpt = ModList.get().getModContainerById(loot.id.getNamespace());
             if (modNameOpt.isPresent()){
                 ModContainer modContainer = modNameOpt.get();
                 String modName = modContainer.getModInfo().getDisplayName();
-                name = LText.translatable("emi_loot.gameplay.unknown_gameplay",modName);
+                name = Text.translatable("emi_loot.gameplay.unknown_gameplay",modName);
             } else {
-                Text unknown = LText.translatable("emi_loot.gameplay.unknown");
-                name = LText.translatable("emi_loot.gameplay.unknown_gameplay", unknown.getString());
+                Text unknown = Text.translatable("emi_loot.gameplay.unknown");
+                name = Text.translatable("emi_loot.gameplay.unknown_gameplay", unknown.getString());
             }
         } else {
             name = text;

@@ -2,7 +2,7 @@ package fzzyhmstrs.emi_loot.parser.function;
 
 import fzzyhmstrs.emi_loot.mixins.ExplorationMapLootFunctionAccessor;
 import fzzyhmstrs.emi_loot.parser.LootTableParser;
-import fzzyhmstrs.emi_loot.util.LText;
+import fzzyhmstrs.emi_loot.util.cleancode.Text;
 import fzzyhmstrs.emi_loot.util.TextKey;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -31,6 +31,6 @@ public class ExplorationMapFunctionParser implements FunctionParser {
             MapState.addDecorationsNbt(mapStack, BlockPos.ORIGIN,"+",decoration);
             typeKey = "emi_loot.map."+ destination.id().getPath();
         }
-        return new LootTableParser.LootFunctionResult(TextKey.of("emi_loot.function.map", LText.translatable(typeKey).getString()), mapStack, conditionTexts);
+        return new LootTableParser.LootFunctionResult(TextKey.of("emi_loot.function.map", Text.translatable(typeKey).getString()), mapStack, conditionTexts);
     }
 }

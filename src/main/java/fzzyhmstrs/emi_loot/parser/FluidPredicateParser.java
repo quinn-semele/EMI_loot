@@ -1,7 +1,7 @@
 package fzzyhmstrs.emi_loot.parser;
 
 import fzzyhmstrs.emi_loot.EMILoot;
-import fzzyhmstrs.emi_loot.util.LText;
+import fzzyhmstrs.emi_loot.util.cleancode.Text;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.predicate.FluidPredicate;
 import net.minecraft.predicate.StatePredicate;
@@ -15,19 +15,19 @@ import java.util.Optional;
 public class FluidPredicateParser {
 
     public static Text parseFluidPredicate(FluidPredicate predicate){
-        return LText.translatable("emi_loot.fluid_predicate.base",parseFluidPredicateInternal(predicate).getString());
+        return Text.translatable("emi_loot.fluid_predicate.base",parseFluidPredicateInternal(predicate).getString());
     }
 
     private static Text parseFluidPredicateInternal(FluidPredicate predicate){
 
         Optional<TagKey<Fluid>> tag = predicate.fluids().flatMap(RegistryEntryList::getTagKey);
         if (tag.isPresent()){
-            return LText.translatable("emi_loot.fluid_predicate.tag",tag.get().id().toString());
+            return Text.translatable("emi_loot.fluid_predicate.tag",tag.get().id().toString());
         }
 
         Optional<RegistryEntryList<Fluid>> fluids = predicate.fluids();
         if (fluids.isPresent()){
-            return LText.translatable("emi_loot.fluid_predicate.fluid", Registries.FLUID.getId(fluids.get().value()).toString());
+            return Text.translatable("emi_loot.fluid_predicate.fluid", Registries.FLUID.getId(fluids.get().value()).toString());
         }
 
         Optional<StatePredicate> statePredicate = predicate.state();
@@ -36,7 +36,7 @@ public class FluidPredicateParser {
         }
 
         if (EMILoot.DEBUG) EMILoot.LOGGER.warn("Empty or unparsable fluid predicate in table: "  + LootTableParser.currentTable);
-        return LText.translatable("emi_loot.predicate.invalid");
+        return Text.translatable("emi_loot.predicate.invalid");
     }
 
 }

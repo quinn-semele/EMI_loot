@@ -3,7 +3,7 @@ package fzzyhmstrs.emi_loot.parser.function;
 import fzzyhmstrs.emi_loot.mixins.SetStewEffectLootFunctionAccessor;
 import fzzyhmstrs.emi_loot.parser.LootTableParser;
 import fzzyhmstrs.emi_loot.parser.processor.ListProcessors;
-import fzzyhmstrs.emi_loot.util.LText;
+import fzzyhmstrs.emi_loot.util.cleancode.Text;
 import fzzyhmstrs.emi_loot.util.TextKey;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.function.LootFunction;
@@ -23,7 +23,7 @@ public class SetStewFunctionParser implements FunctionParser{
             list.add(effect.effect().value().getName().copy());
         }
         if (list.isEmpty()){
-            return new LootTableParser.LootFunctionResult(TextKey.of("emi_loot.function.set_stew", LText.translatable("emi_loot.function.set_stew_unknown").getString()), ItemStack.EMPTY, conditionTexts);
+            return new LootTableParser.LootFunctionResult(TextKey.of("emi_loot.function.set_stew", Text.translatable("emi_loot.function.set_stew_unknown").getString()), ItemStack.EMPTY, conditionTexts);
         }
         return new LootTableParser.LootFunctionResult(TextKey.of("emi_loot.function.set_stew", ListProcessors.buildOrList(list).getString()), ItemStack.EMPTY, conditionTexts);
     }

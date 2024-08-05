@@ -2,7 +2,7 @@ package fzzyhmstrs.emi_loot.parser.function;
 
 import fzzyhmstrs.emi_loot.mixins.SetPotionLootFunctionAccessor;
 import fzzyhmstrs.emi_loot.parser.LootTableParser;
-import fzzyhmstrs.emi_loot.util.LText;
+import fzzyhmstrs.emi_loot.util.cleancode.Text;
 import fzzyhmstrs.emi_loot.util.TextKey;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.PotionContentsComponent;
@@ -22,7 +22,7 @@ public class SetPotionFunctionParser implements FunctionParser {
     public LootTableParser.LootFunctionResult parseFunction(LootFunction function,ItemStack stack,boolean parentIsAlternative, List<TextKey> conditionTexts){
         RegistryEntry<Potion> potion = ((SetPotionLootFunctionAccessor)function).getPotion();
         stack.set(DataComponentTypes.POTION_CONTENTS, new PotionContentsComponent(potion));
-        Text potionName = LText.translatable(Potion.finishTranslationKey(Optional.of(potion), Items.POTION.getTranslationKey() + ".effect."));
+        Text potionName = Text.translatable(Potion.finishTranslationKey(Optional.of(potion), Items.POTION.getTranslationKey() + ".effect."));
         return new LootTableParser.LootFunctionResult(TextKey.of("emi_loot.function.potion",potionName.getString()), ItemStack.EMPTY,conditionTexts);
     }
 }

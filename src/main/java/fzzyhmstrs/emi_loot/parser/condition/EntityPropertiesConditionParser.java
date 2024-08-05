@@ -2,7 +2,7 @@ package fzzyhmstrs.emi_loot.parser.condition;
 
 import fzzyhmstrs.emi_loot.parser.EntityPredicateParser;
 import fzzyhmstrs.emi_loot.parser.LootTableParser;
-import fzzyhmstrs.emi_loot.util.LText;
+import fzzyhmstrs.emi_loot.util.cleancode.Text;
 import fzzyhmstrs.emi_loot.util.TextKey;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.EntityPropertiesLootCondition;
@@ -22,9 +22,9 @@ public class EntityPropertiesConditionParser implements ConditionParser{
         EntityPredicate predicate = ((EntityPropertiesLootCondition)condition).predicate().orElseThrow(); // TODO?
         MutableText propText;
         if (entity == LootContext.EntityTarget.THIS){
-            propText = LText.translatable("emi_loot.entity_predicate.entity_this", EntityPredicateParser.parseEntityPredicate(predicate));
+            propText = Text.translatable("emi_loot.entity_predicate.entity_this", EntityPredicateParser.parseEntityPredicate(predicate));
         } else {
-            propText = LText.translatable("emi_loot.entity_predicate.entity_killer", EntityPredicateParser.parseEntityPredicate(predicate));
+            propText = Text.translatable("emi_loot.entity_predicate.entity_killer", EntityPredicateParser.parseEntityPredicate(predicate));
         }
         return Collections.singletonList(new LootTableParser.LootConditionResult(TextKey.of("emi_loot.condition.entity_props",propText.getString())));
     }

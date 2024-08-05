@@ -2,7 +2,7 @@ package fzzyhmstrs.emi_loot.parser;
 
 import fzzyhmstrs.emi_loot.EMILoot;
 import fzzyhmstrs.emi_loot.parser.processor.ListProcessors;
-import fzzyhmstrs.emi_loot.util.LText;
+import fzzyhmstrs.emi_loot.util.cleancode.Text;
 import net.minecraft.block.Block;
 import net.minecraft.predicate.BlockPredicate;
 import net.minecraft.predicate.NbtPredicate;
@@ -18,19 +18,19 @@ import java.util.Optional;
 public class BlockPredicateParser {
 
     public static Text parseBlockPredicate(BlockPredicate predicate){
-        return LText.translatable("emi_loot.block_predicate.base", parseBlockPredicateInternal(predicate).getString());
+        return Text.translatable("emi_loot.block_predicate.base", parseBlockPredicateInternal(predicate).getString());
     }
 
     private static Text parseBlockPredicateInternal(BlockPredicate predicate){
         Optional<TagKey<Block>> tag = predicate.blocks().flatMap(RegistryEntryList::getTagKey);
         if (tag.isPresent()){
-            return LText.translatable("emi_loot.block_predicate.tag",tag.get().id().toString());
+            return Text.translatable("emi_loot.block_predicate.tag",tag.get().id().toString());
         }
 
         Optional<RegistryEntryList<Block>> blocks = predicate.blocks();
         if (blocks.isPresent() && blocks.get().size() > 0){
             List<MutableText> list = blocks.get().stream().map(entry -> entry.value().getName()).toList();
-            return LText.translatable("emi_loot.block_predicate.list_1", ListProcessors.buildOrList(list));
+            return Text.translatable("emi_loot.block_predicate.list_1", ListProcessors.buildOrList(list));
         }
 
         Optional<StatePredicate> statePredicate = predicate.state();
@@ -44,6 +44,6 @@ public class BlockPredicateParser {
         }
 
         if (EMILoot.DEBUG) EMILoot.LOGGER.warn("Empty or unparsable block predicate in table: "  + LootTableParser.currentTable);
-        return LText.translatable("emi_loot.predicate.invalid");
+        return Text.translatable("emi_loot.predicate.invalid");
     }
 }

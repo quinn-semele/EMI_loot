@@ -3,7 +3,7 @@ package fzzyhmstrs.emi_loot.parser;
 
 import fzzyhmstrs.emi_loot.EMILoot;
 import fzzyhmstrs.emi_loot.parser.processor.ListProcessors;
-import fzzyhmstrs.emi_loot.util.LText;
+import fzzyhmstrs.emi_loot.util.cleancode.Text;
 import net.minecraft.predicate.StatePredicate;
 import net.minecraft.predicate.StatePredicate.Condition;
 import net.minecraft.text.MutableText;
@@ -23,17 +23,17 @@ public class StatePredicateParser {
                     String key = condition.key();
                     String min = ((StatePredicate.RangedValueMatcher) condition.valueMatcher()).min().orElse(null);
                     String max = ((StatePredicate.RangedValueMatcher) condition.valueMatcher()).max().orElse(null);
-                    list2.add(LText.translatable("emi_loot.state_predicate.state_between",key,min,max));
+                    list2.add(Text.translatable("emi_loot.state_predicate.state_between",key,min,max));
                 } else if (condition.valueMatcher() instanceof StatePredicate.ExactValueMatcher){
                     String key = condition.key();
                     String value = ((StatePredicate.ExactValueMatcher) condition.valueMatcher()).value();
-                    list2.add(LText.translatable("emi_loot.state_predicate.state_exact",key,value));
+                    list2.add(Text.translatable("emi_loot.state_predicate.state_exact",key,value));
                 }
             }
-            return LText.translatable("emi_loot.state_predicate.base", ListProcessors.buildAndList(list2));
+            return Text.translatable("emi_loot.state_predicate.base", ListProcessors.buildAndList(list2));
         }
         if (EMILoot.DEBUG) EMILoot.LOGGER.warn("Empty or unparsable block/fluid state predicate in table: "  + LootTableParser.currentTable);
-        return LText.translatable("emi_loot.predicate.invalid");
+        return Text.translatable("emi_loot.predicate.invalid");
     }
   
 }

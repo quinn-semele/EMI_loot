@@ -1,7 +1,7 @@
 package fzzyhmstrs.emi_loot.parser;
 
 import fzzyhmstrs.emi_loot.EMILoot;
-import fzzyhmstrs.emi_loot.util.LText;
+import fzzyhmstrs.emi_loot.util.cleancode.Text;
 import net.minecraft.predicate.BlockPredicate;
 import net.minecraft.predicate.FluidPredicate;
 import net.minecraft.predicate.LightPredicate;
@@ -22,41 +22,41 @@ public class LocationPredicateParser {
         if (position.isPresent()) {
             NumberRange.DoubleRange x = position.get().x();
             if (!x.equals(NumberRange.DoubleRange.ANY)) {
-                return LText.translatable("emi_loot.location_predicate.x", x.min().orElse(null), x.max().orElse(null));
+                return Text.translatable("emi_loot.location_predicate.x", x.min().orElse(null), x.max().orElse(null));
             }
 
             NumberRange.DoubleRange y = position.get().y();
             if (!y.equals(NumberRange.DoubleRange.ANY)) {
-                return LText.translatable("emi_loot.location_predicate.y", y.min().orElse(null), y.max().orElse(null));
+                return Text.translatable("emi_loot.location_predicate.y", y.min().orElse(null), y.max().orElse(null));
             }
 
             NumberRange.DoubleRange z = position.get().z();
             if (!z.equals(NumberRange.DoubleRange.ANY)) {
-                return LText.translatable("emi_loot.location_predicate.z", z.min().orElse(null), z.max().orElse(null));
+                return Text.translatable("emi_loot.location_predicate.z", z.min().orElse(null), z.max().orElse(null));
             }
         }
 
         Optional<RegistryKey<World>> dim = predicate.dimension();
         if (dim.isPresent()){
-            return LText.translatable("emi_loot.location_predicate.dim",dim.get().getValue().toString());
+            return Text.translatable("emi_loot.location_predicate.dim",dim.get().getValue().toString());
         }
 
         Optional<RegistryKey<Biome>> biome = predicate.biome();
         if (biome.isPresent()){
-            return LText.translatable("emi_loot.location_predicate.biome",biome.get().getValue().toString());
+            return Text.translatable("emi_loot.location_predicate.biome",biome.get().getValue().toString());
         }
 
         Optional<RegistryKey<Structure>> structure = predicate.structure();
         if (structure.isPresent()){
-            return LText.translatable("emi_loot.location_predicate.structure",structure.get().getValue().toString());
+            return Text.translatable("emi_loot.location_predicate.structure",structure.get().getValue().toString());
         }
 
         Optional<Boolean> smokey = predicate.smokey();
         if (smokey.isPresent()){
             if (smokey.get()){
-                return LText.translatable("emi_loot.location_predicate.smoke_true");
+                return Text.translatable("emi_loot.location_predicate.smoke_true");
             } else {
-                return LText.translatable("emi_loot.location_predicate.smoke_false");
+                return Text.translatable("emi_loot.location_predicate.smoke_false");
             }
         }
 
@@ -75,7 +75,7 @@ public class LocationPredicateParser {
             return FluidPredicateParser.parseFluidPredicate(fluid.get());
         }
         if (EMILoot.DEBUG) EMILoot.LOGGER.warn("Empty or unparsable location predicate in table: "  + LootTableParser.currentTable);
-        return LText.translatable("emi_loot.predicate.invalid");
+        return Text.translatable("emi_loot.predicate.invalid");
     }
 
 }

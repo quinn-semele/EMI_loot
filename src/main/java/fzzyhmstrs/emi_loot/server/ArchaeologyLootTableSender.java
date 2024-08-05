@@ -1,12 +1,12 @@
 package fzzyhmstrs.emi_loot.server;
 
+import fzzyhmstrs.emi_loot.util.cleancode.Identifier;
 import io.netty.buffer.Unpooled;
 import lol.bai.badpackets.api.PacketSender;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.connection.ConnectionType;
 
 import java.util.HashMap;
@@ -18,9 +18,9 @@ public class ArchaeologyLootTableSender implements LootSender<ArchaeologyLootPoo
 	private final String idToSend;
 	final List<ArchaeologyLootPoolBuilder> builderList = new LinkedList<>();
 	HashMap<ItemStack, Float> floatMap = new HashMap<>();
-	public static Identifier ARCHAEOLOGY_SENDER = Identifier.of("e_1", "a_s");
+	public static ResourceLocation ARCHAEOLOGY_SENDER = Identifier.of("e_1", "a_s");
 
-	public ArchaeologyLootTableSender(Identifier id) {
+	public ArchaeologyLootTableSender(ResourceLocation id) {
 		this.idToSend = LootSender.getIdToSend(id);
 	}
 
@@ -30,13 +30,13 @@ public class ArchaeologyLootTableSender implements LootSender<ArchaeologyLootPoo
 	}
 
 	@Override
-	public void send(ServerPlayerEntity player) {
+	public void send(ServerPlayer player) {
 		if (!PacketSender.s2c(player).canSend(ARCHAEOLOGY_SENDER)) return;
-		RegistryByteBuf buf = new RegistryByteBuf(Unpooled.buffer(), player.server.getRegistryManager(), ConnectionType.NEOFORGE);
-		buf.writeString(idToSend);
+		RegistryFriendlyByteBuf buf = new RegistryFriendlyByteBuf(Unpooled.buffer(), player.server.registryAccess(), ConnectionType.NEOFORGE);
+		buf.writeUtf(idToSend);
 		buf.writeShort(floatMap.size());
 		floatMap.forEach((item, floatWeight) -> {
-			ItemStack.PACKET_CODEC.encode(buf, item);
+			ItemStack.STREAM_CODEC.encode(buf, item);
 			buf.writeFloat(floatWeight);
 		});
 		PacketSender.s2c(player).send(ARCHAEOLOGY_SENDER, buf);

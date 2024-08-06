@@ -15,7 +15,7 @@ import java.util.List;
 public class AlternativesConditionParser implements ConditionParser{
 
     @Override
-    public List<LootTableParser.LootConditionResult> parseCondition(LootCondition condition, ItemStack stack, boolean parentIsAlternative){
+    public List<LootTableParser.LootConditionResult> parseCondition(LootItemCondition condition, ItemStack stack, boolean parentIsAlternative){
         List<LootItemCondition> terms = ((AlternativeLootConditionAccessor)condition).getConditions();
         int size = terms.size();
         if (size == 1){

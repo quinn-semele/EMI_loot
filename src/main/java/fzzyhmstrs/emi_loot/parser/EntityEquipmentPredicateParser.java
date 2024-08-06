@@ -1,16 +1,16 @@
 package fzzyhmstrs.emi_loot.parser;
 
 import fzzyhmstrs.emi_loot.EMILoot;
-import fzzyhmstrs.emi_loot.util.cleancode.Text;
-import net.minecraft.predicate.entity.EntityEquipmentPredicate;
-import net.minecraft.predicate.item.ItemPredicate;
-import net.minecraft.text.Text;
-
 import java.util.Optional;
+
+import fzzyhmstrs.emi_loot.util.cleancode.Text;
+import net.minecraft.advancements.critereon.EntityEquipmentPredicate;
+import net.minecraft.advancements.critereon.ItemPredicate;
+import net.minecraft.network.chat.Component;
 
 public class EntityEquipmentPredicateParser{
 
-    public static Text parseEntityEquipmentPredicate(EntityEquipmentPredicate predicate){
+    public static Component parseEntityEquipmentPredicate(EntityEquipmentPredicate predicate){
         Optional<ItemPredicate> head = predicate.head();
         if (head.isPresent()){
             return ItemPredicateParser.parseItemPredicate(head.get());

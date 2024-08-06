@@ -4,29 +4,28 @@ package fzzyhmstrs.emi_loot.parser;
 import fzzyhmstrs.emi_loot.EMILoot;
 import fzzyhmstrs.emi_loot.parser.processor.ListProcessors;
 import fzzyhmstrs.emi_loot.util.cleancode.Text;
-import net.minecraft.predicate.StatePredicate;
-import net.minecraft.predicate.StatePredicate.Condition;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
+import net.minecraft.advancements.critereon.StatePropertiesPredicate;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 
 import java.util.LinkedList;
 import java.util.List;
 
 public class StatePredicateParser {
   
-    public static Text parseStatePredicate(StatePredicate predicate){
-        List<Condition> list = predicate.conditions();
+    public static Component parseStatePredicate(StatePropertiesPredicate predicate){
+        List<StatePropertiesPredicate.PropertyMatcher> list = predicate.properties();
         if (!list.isEmpty()){
-            List<MutableText> list2 = new LinkedList<>();
-            for (Condition condition : list){
-                if (condition.valueMatcher() instanceof StatePredicate.RangedValueMatcher){
-                    String key = condition.key();
-                    String min = ((StatePredicate.RangedValueMatcher) condition.valueMatcher()).min().orElse(null);
-                    String max = ((StatePredicate.RangedValueMatcher) condition.valueMatcher()).max().orElse(null);
+            List<MutableComponent> list2 = new LinkedList<>();
+            for (StatePropertiesPredicate.PropertyMatcher condition : list){
+                if (condition.valueMatcher() instanceof StatePropertiesPredicate.RangedMatcher){
+                    String key = condition.name();
+                    String min = ((StatePropertiesPredicate.RangedMatcher) condition.valueMatcher()).minValue().orElse(null);
+                    String max = ((StatePropertiesPredicate.RangedMatcher) condition.valueMatcher()).maxValue().orElse(null);
                     list2.add(Text.translatable("emi_loot.state_predicate.state_between",key,min,max));
-                } else if (condition.valueMatcher() instanceof StatePredicate.ExactValueMatcher){
-                    String key = condition.key();
-                    String value = ((StatePredicate.ExactValueMatcher) condition.valueMatcher()).value();
+                } else if (condition.valueMatcher() instanceof StatePropertiesPredicate.ExactMatcher){
+                    String key = condition.name();
+                    String value = ((StatePropertiesPredicate.ExactMatcher) condition.valueMatcher()).value();
                     list2.add(Text.translatable("emi_loot.state_predicate.state_exact",key,value));
                 }
             }

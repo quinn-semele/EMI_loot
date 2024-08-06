@@ -2,38 +2,38 @@ package fzzyhmstrs.emi_loot.parser;
 
 import fzzyhmstrs.emi_loot.EMILoot;
 import fzzyhmstrs.emi_loot.parser.processor.ListProcessors;
-import fzzyhmstrs.emi_loot.util.cleancode.Text;
-import net.minecraft.block.Block;
-import net.minecraft.predicate.BlockPredicate;
-import net.minecraft.predicate.NbtPredicate;
-import net.minecraft.predicate.StatePredicate;
-import net.minecraft.registry.entry.RegistryEntryList;
-import net.minecraft.registry.tag.TagKey;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-
 import java.util.List;
 import java.util.Optional;
 
+import fzzyhmstrs.emi_loot.util.cleancode.Text;
+import net.minecraft.advancements.critereon.BlockPredicate;
+import net.minecraft.advancements.critereon.NbtPredicate;
+import net.minecraft.advancements.critereon.StatePropertiesPredicate;
+import net.minecraft.core.HolderSet;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.level.block.Block;
+
 public class BlockPredicateParser {
 
-    public static Text parseBlockPredicate(BlockPredicate predicate){
+    public static Component parseBlockPredicate(BlockPredicate predicate){
         return Text.translatable("emi_loot.block_predicate.base", parseBlockPredicateInternal(predicate).getString());
     }
 
-    private static Text parseBlockPredicateInternal(BlockPredicate predicate){
-        Optional<TagKey<Block>> tag = predicate.blocks().flatMap(RegistryEntryList::getTagKey);
+    private static Component parseBlockPredicateInternal(BlockPredicate predicate){
+        Optional<TagKey<Block>> tag = predicate.blocks().flatMap(HolderSet::unwrapKey);
         if (tag.isPresent()){
-            return Text.translatable("emi_loot.block_predicate.tag",tag.get().id().toString());
+            return Text.translatable("emi_loot.block_predicate.tag",tag.get().location().toString());
         }
 
-        Optional<RegistryEntryList<Block>> blocks = predicate.blocks();
+        Optional<HolderSet<Block>> blocks = predicate.blocks();
         if (blocks.isPresent() && blocks.get().size() > 0){
-            List<MutableText> list = blocks.get().stream().map(entry -> entry.value().getName()).toList();
+            List<MutableComponent> list = blocks.get().stream().map(entry -> entry.value().getName()).toList();
             return Text.translatable("emi_loot.block_predicate.list_1", ListProcessors.buildOrList(list));
         }
 
-        Optional<StatePredicate> statePredicate = predicate.state();
+        Optional<StatePropertiesPredicate> statePredicate = predicate.properties();
         if (statePredicate.isPresent()){
             return StatePredicateParser.parseStatePredicate(statePredicate.get());
         }

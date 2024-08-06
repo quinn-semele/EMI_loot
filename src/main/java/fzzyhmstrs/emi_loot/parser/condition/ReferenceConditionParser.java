@@ -2,25 +2,24 @@ package fzzyhmstrs.emi_loot.parser.condition;
 
 import fzzyhmstrs.emi_loot.parser.LootTableParser;
 import fzzyhmstrs.emi_loot.util.TextKey;
-import net.minecraft.item.ItemStack;
-import net.minecraft.loot.LootDataKey;
-import net.minecraft.loot.LootDataType;
-import net.minecraft.loot.condition.LootCondition;
-import net.minecraft.loot.condition.LootConditionTypes;
-import net.minecraft.loot.condition.ReferenceLootCondition;
-import net.minecraft.util.Identifier;
-
 import java.util.Collections;
 import java.util.List;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.loot.LootDataId;
+import net.minecraft.world.level.storage.loot.LootDataType;
+import net.minecraft.world.level.storage.loot.predicates.ConditionReference;
+import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
+import net.minecraft.world.level.storage.loot.predicates.LootItemConditions;
 
 public class ReferenceConditionParser implements ConditionParser{
 
     @Override
-    public List<LootTableParser.LootConditionResult> parseCondition(LootCondition condition, ItemStack stack, boolean parentIsAlternative){
-        Identifier id = ((ReferenceLootCondition)condition).id();
+    public List<LootTableParser.LootConditionResult> parseCondition(LootItemCondition condition, ItemStack stack, boolean parentIsAlternative){
+        ResourceLocation id = ((ConditionReference)condition).name().location();
         if (LootTableParser.lootManager != null){
-            LootCondition referenceCondition = LootTableParser.lootManager.getElement(new LootDataKey<>(LootDataType.PREDICATES, id));
-            if (referenceCondition != null && referenceCondition.getType() != LootConditionTypes.REFERENCE){
+            LootItemCondition referenceCondition = LootTableParser.lootManager.getElement(new LootDataId<>(LootDataType.PREDICATE, id));
+            if (referenceCondition != null && referenceCondition.getType() != LootItemConditions.REFERENCE){
                 return LootTableParser.parseLootCondition(referenceCondition,stack,parentIsAlternative);
             }
         }

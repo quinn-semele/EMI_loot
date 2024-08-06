@@ -2,53 +2,49 @@ package fzzyhmstrs.emi_loot.parser;
 
 import fzzyhmstrs.emi_loot.EMILoot;
 import fzzyhmstrs.emi_loot.util.cleancode.Text;
-import net.minecraft.predicate.BlockPredicate;
-import net.minecraft.predicate.FluidPredicate;
-import net.minecraft.predicate.LightPredicate;
-import net.minecraft.predicate.NumberRange;
-import net.minecraft.predicate.entity.LocationPredicate;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.text.Text;
-import net.minecraft.world.World;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.gen.structure.Structure;
+import net.minecraft.advancements.critereon.*;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.levelgen.structure.Structure;
 
 import java.util.Optional;
 
 public class LocationPredicateParser {
 
-    public static Text parseLocationPredicate(LocationPredicate predicate){
-        Optional<LocationPredicate.PositionRange> position = predicate.position();
+    public static Component parseLocationPredicate(LocationPredicate predicate){
+        Optional<LocationPredicate.PositionPredicate> position = predicate.position();
         if (position.isPresent()) {
-            NumberRange.DoubleRange x = position.get().x();
-            if (!x.equals(NumberRange.DoubleRange.ANY)) {
+            MinMaxBounds.Doubles x = position.get().x();
+            if (!x.equals(MinMaxBounds.Doubles.ANY)) {
                 return Text.translatable("emi_loot.location_predicate.x", x.min().orElse(null), x.max().orElse(null));
             }
 
-            NumberRange.DoubleRange y = position.get().y();
-            if (!y.equals(NumberRange.DoubleRange.ANY)) {
+            MinMaxBounds.Doubles y = position.get().y();
+            if (!y.equals(MinMaxBounds.Doubles.ANY)) {
                 return Text.translatable("emi_loot.location_predicate.y", y.min().orElse(null), y.max().orElse(null));
             }
 
-            NumberRange.DoubleRange z = position.get().z();
-            if (!z.equals(NumberRange.DoubleRange.ANY)) {
+            MinMaxBounds.Doubles z = position.get().z();
+            if (!z.equals(MinMaxBounds.Doubles.ANY)) {
                 return Text.translatable("emi_loot.location_predicate.z", z.min().orElse(null), z.max().orElse(null));
             }
         }
 
-        Optional<RegistryKey<World>> dim = predicate.dimension();
+        Optional<ResourceKey<Level>> dim = predicate.dimension();
         if (dim.isPresent()){
-            return Text.translatable("emi_loot.location_predicate.dim",dim.get().getValue().toString());
+            return Text.translatable("emi_loot.location_predicate.dim",dim.get().location().toString());
         }
 
-        Optional<RegistryKey<Biome>> biome = predicate.biome();
+        Optional<ResourceKey<Biome>> biome = predicate.biome();
         if (biome.isPresent()){
-            return Text.translatable("emi_loot.location_predicate.biome",biome.get().getValue().toString());
+            return Text.translatable("emi_loot.location_predicate.biome",biome.get().location().toString());
         }
 
-        Optional<RegistryKey<Structure>> structure = predicate.structure();
+        Optional<ResourceKey<Structure>> structure = predicate.structure();
         if (structure.isPresent()){
-            return Text.translatable("emi_loot.location_predicate.structure",structure.get().getValue().toString());
+            return Text.translatable("emi_loot.location_predicate.structure",structure.get().location().toString());
         }
 
         Optional<Boolean> smokey = predicate.smokey();

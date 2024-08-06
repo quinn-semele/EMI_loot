@@ -3,12 +3,12 @@ package fzzyhmstrs.emi_loot.parser;
 import fzzyhmstrs.emi_loot.EMILoot;
 import fzzyhmstrs.emi_loot.parser.processor.ListProcessors;
 import fzzyhmstrs.emi_loot.util.cleancode.Text;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.predicate.item.EnchantmentPredicate;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.registry.entry.RegistryEntryList;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
+import net.minecraft.advancements.critereon.EnchantmentPredicate;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.world.item.enchantment.Enchantment;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -16,13 +16,13 @@ import java.util.Optional;
 
 public class EnchantmentPredicateParser{
 
-    public static Text parseEnchantmentPredicates(List<EnchantmentPredicate> list){
-        List<MutableText> list2 = new LinkedList<>();
+    public static Component parseEnchantmentPredicates(List<EnchantmentPredicate> list){
+        List<MutableComponent> list2 = new LinkedList<>();
         for (EnchantmentPredicate predicate : list){
-            Optional<RegistryEntryList<Enchantment>> enchantments = predicate.enchantments();
+            Optional<HolderSet<Enchantment>> enchantments = predicate.enchantments();
             if (enchantments.isPresent()) {
-                for (RegistryEntry<Enchantment> enchantment : enchantments.get()) {
-                    list2.add((MutableText) Enchantment.getName(enchantment, 1));
+                for (Holder<Enchantment> enchantment : enchantments.get()) {
+                    list2.add((MutableComponent) Enchantment.getFullname(enchantment, 1));
                 }
             }
         }

@@ -2,17 +2,17 @@ package fzzyhmstrs.emi_loot.parser;
 
 import fzzyhmstrs.emi_loot.EMILoot;
 import fzzyhmstrs.emi_loot.util.cleancode.Text;
-import net.minecraft.predicate.LightPredicate;
-import net.minecraft.predicate.NumberRange;
-import net.minecraft.text.Text;
+import net.minecraft.advancements.critereon.LightPredicate;
+import net.minecraft.advancements.critereon.MinMaxBounds;
+import net.minecraft.network.chat.Component;
 
 import java.util.Objects;
 
 public class LightPredicateParser{
 
-    public static Text parseLightPredicate(LightPredicate predicate){
-        NumberRange.IntRange range = predicate.range();
-        if (range.equals(NumberRange.IntRange.ANY)) {
+    public static Component parseLightPredicate(LightPredicate predicate){
+        MinMaxBounds.Ints range = predicate.composite();
+        if (range.equals(MinMaxBounds.Ints.ANY)) {
             if (EMILoot.DEBUG) EMILoot.LOGGER.warn("Undefined light predicate in table: "  + LootTableParser.currentTable);
             return Text.translatable("emi_loot.predicate.invalid");
         }

@@ -4,17 +4,16 @@ import fzzyhmstrs.emi_loot.mixins.SetCountLootFunctionAccessor;
 import fzzyhmstrs.emi_loot.parser.LootTableParser;
 import fzzyhmstrs.emi_loot.parser.processor.NumberProcessors;
 import fzzyhmstrs.emi_loot.util.TextKey;
-import net.minecraft.item.ItemStack;
-import net.minecraft.loot.function.LootFunction;
-import net.minecraft.loot.provider.number.LootNumberProvider;
-
 import java.util.List;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
+import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
 
 public class SetCountFunctionParser implements FunctionParser{
 
     @Override
-    public LootTableParser.LootFunctionResult parseFunction(LootFunction function, ItemStack stack,boolean parentIsAlternative, List<TextKey> conditionTexts){
-        LootNumberProvider provider = ((SetCountLootFunctionAccessor)function).getCountRange();
+    public LootTableParser.LootFunctionResult parseFunction(LootItemFunction function, ItemStack stack,boolean parentIsAlternative, List<TextKey> conditionTexts){
+        NumberProvider provider = ((SetCountLootFunctionAccessor)function).getCountRange();
         float rollAvg = NumberProcessors.getRollAvg(provider);
         boolean add = ((SetCountLootFunctionAccessor)function).getAdd();
         if (add){

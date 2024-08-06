@@ -2,25 +2,25 @@ package fzzyhmstrs.emi_loot.parser.condition;
 
 import fzzyhmstrs.emi_loot.parser.EntityPredicateParser;
 import fzzyhmstrs.emi_loot.parser.LootTableParser;
-import fzzyhmstrs.emi_loot.util.cleancode.Text;
 import fzzyhmstrs.emi_loot.util.TextKey;
-import net.minecraft.item.ItemStack;
-import net.minecraft.loot.condition.EntityPropertiesLootCondition;
-import net.minecraft.loot.condition.LootCondition;
-import net.minecraft.loot.context.LootContext;
-import net.minecraft.predicate.entity.EntityPredicate;
-import net.minecraft.text.MutableText;
-
 import java.util.Collections;
 import java.util.List;
+
+import fzzyhmstrs.emi_loot.util.cleancode.Text;
+import net.minecraft.advancements.critereon.EntityPredicate;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
+import net.minecraft.world.level.storage.loot.predicates.LootItemEntityPropertyCondition;
 
 public class EntityPropertiesConditionParser implements ConditionParser{
 
     @Override
-    public List<LootTableParser.LootConditionResult> parseCondition(LootCondition condition, ItemStack stack, boolean parentIsAlternative){
-        LootContext.EntityTarget entity = ((EntityPropertiesLootCondition)condition).entity();
-        EntityPredicate predicate = ((EntityPropertiesLootCondition)condition).predicate().orElseThrow(); // TODO?
-        MutableText propText;
+    public List<LootTableParser.LootConditionResult> parseCondition(LootItemCondition condition, ItemStack stack, boolean parentIsAlternative){
+        LootContext.EntityTarget entity = ((LootItemEntityPropertyCondition)condition).entityTarget();
+        EntityPredicate predicate = ((LootItemEntityPropertyCondition)condition).predicate().orElseThrow(); // TODO?
+        MutableComponent propText;
         if (entity == LootContext.EntityTarget.THIS){
             propText = Text.translatable("emi_loot.entity_predicate.entity_this", EntityPredicateParser.parseEntityPredicate(predicate));
         } else {

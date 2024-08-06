@@ -1,20 +1,20 @@
 package fzzyhmstrs.emi_loot.parser;
 
 import fzzyhmstrs.emi_loot.EMILoot;
-import fzzyhmstrs.emi_loot.util.cleancode.Text;
-import net.minecraft.predicate.entity.EntityFlagsPredicate;
-import net.minecraft.text.Text;
-
 import java.util.Optional;
+
+import fzzyhmstrs.emi_loot.util.cleancode.Text;
+import net.minecraft.advancements.critereon.EntityFlagsPredicate;
+import net.minecraft.network.chat.Component;
 
 public class EntityFlagsPredicateParser{
 
 
-    public static Text parseEntityFlagsPredicate(EntityFlagsPredicate predicate){
+    public static Component parseEntityFlagsPredicate(EntityFlagsPredicate predicate){
         return Text.translatable("emi_loot.entity_predicate.flag",parseEntityFlagsPredicateInternal(predicate).getString());
     }
 
-    private static Text parseEntityFlagsPredicateInternal(EntityFlagsPredicate predicate){
+    private static Component parseEntityFlagsPredicateInternal(EntityFlagsPredicate predicate){
         Optional<Boolean> isOnFire = predicate.isOnFire();
         if (isOnFire.isPresent()){
             if (isOnFire.get()){
@@ -24,7 +24,7 @@ public class EntityFlagsPredicateParser{
             }
         }
 
-        Optional<Boolean> isSneaking = predicate.isSneaking();
+        Optional<Boolean> isSneaking = predicate.isCrouching();
         if (isSneaking.isPresent()){
             if (isSneaking.get()){
                 return Text.translatable("emi_loot.entity_predicate.sneak_true");

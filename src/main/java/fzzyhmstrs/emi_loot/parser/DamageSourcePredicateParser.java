@@ -2,15 +2,15 @@ package fzzyhmstrs.emi_loot.parser;
 
 import fzzyhmstrs.emi_loot.EMILoot;
 import fzzyhmstrs.emi_loot.util.cleancode.Text;
-import net.minecraft.predicate.entity.DamageSourcePredicate;
-import net.minecraft.predicate.entity.EntityPredicate;
-import net.minecraft.text.Text;
+import net.minecraft.advancements.critereon.DamageSourcePredicate;
+import net.minecraft.advancements.critereon.EntityPredicate;
+import net.minecraft.network.chat.Component;
 
 import java.util.Optional;
 
 public class DamageSourcePredicateParser {
 
-    public static Text parseDamageSourcePredicate(DamageSourcePredicate predicate){
+    public static Component parseDamageSourcePredicate(DamageSourcePredicate predicate){
         Optional<EntityPredicate> directPredicate = predicate.directEntity();
         if (directPredicate.isPresent()){
             return EntityPredicateParser.parseEntityPredicate(directPredicate.get());

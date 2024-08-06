@@ -2,26 +2,26 @@ package fzzyhmstrs.emi_loot.parser;
 
 import fzzyhmstrs.emi_loot.EMILoot;
 import fzzyhmstrs.emi_loot.parser.processor.ListProcessors;
-import fzzyhmstrs.emi_loot.util.cleancode.Text;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.predicate.NumberRange;
-import net.minecraft.predicate.entity.EntityEffectPredicate;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-
 import java.util.*;
+
+import fzzyhmstrs.emi_loot.util.cleancode.Text;
+import net.minecraft.advancements.critereon.MinMaxBounds;
+import net.minecraft.advancements.critereon.MobEffectsPredicate;
+import net.minecraft.core.Holder;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.world.effect.MobEffect;
 
 public class EntityEffectPredicateParser{
 
-    public static Text parseEntityEffectPredicate(EntityEffectPredicate predicate){
-        Map<RegistryEntry<StatusEffect>, EntityEffectPredicate.EffectData> effects = predicate.effects();
-        List<MutableText> list = new LinkedList<>();
-        for (Map.Entry<RegistryEntry<StatusEffect>, EntityEffectPredicate.EffectData> entry : effects.entrySet()) {
-            Text name = entry.getKey().value().getName();
-            EntityEffectPredicate.EffectData data = entry.getValue();
-            NumberRange.IntRange amplifier = data.amplifier();
-            if (!amplifier.equals(NumberRange.IntRange.ANY)){
+    public static Component parseEntityEffectPredicate(MobEffectsPredicate predicate){
+        Map<Holder<MobEffect>, MobEffectsPredicate.MobEffectInstancePredicate> effects = predicate.effectMap();
+        List<MutableComponent> list = new LinkedList<>();
+        for (Map.Entry<Holder<MobEffect>, MobEffectsPredicate.MobEffectInstancePredicate> entry : effects.entrySet()) {
+            Component name = entry.getKey().value().getDisplayName();
+            MobEffectsPredicate.MobEffectInstancePredicate data = entry.getValue();
+            MinMaxBounds.Ints amplifier = data.amplifier();
+            if (!amplifier.equals(MinMaxBounds.Ints.ANY)){
                 Optional<Integer> min = amplifier.min();
                 Optional<Integer> max = amplifier.max();
                 if (Objects.equals(min, max) && min.isPresent()){
@@ -33,8 +33,8 @@ public class EntityEffectPredicateParser{
                 }
             }
 
-            NumberRange.IntRange duration = data.duration();
-            if (!duration.equals(NumberRange.IntRange.ANY)){
+            MinMaxBounds.Ints duration = data.duration();
+            if (!duration.equals(MinMaxBounds.Ints.ANY)){
                 Optional<Integer> min = duration.min();
                 Optional<Integer> max = duration.max();
                 if (Objects.equals(min, max) && min.isPresent()){

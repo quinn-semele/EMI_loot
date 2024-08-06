@@ -2,32 +2,31 @@ package fzzyhmstrs.emi_loot.parser;
 
 import fzzyhmstrs.emi_loot.EMILoot;
 import fzzyhmstrs.emi_loot.util.cleancode.Text;
-import net.minecraft.predicate.NbtPredicate;
-import net.minecraft.predicate.entity.*;
-import net.minecraft.text.Text;
+import net.minecraft.advancements.critereon.*;
+import net.minecraft.network.chat.Component;
 
 import java.util.Optional;
 
 public class EntityPredicateParser {
 
-    public static Text parseEntityPredicate(EntityPredicate predicate){
+    public static Component parseEntityPredicate(EntityPredicate predicate){
         return Text.translatable("emi_loot.entity_predicate.base",parseEntityPredicateInternal(predicate).getString());
     }
 
-    private static Text parseEntityPredicateInternal(EntityPredicate predicate){
+    private static Component parseEntityPredicateInternal(EntityPredicate predicate){
         //if (predicate.equals(EntityPredicate.ANY)) {
         //    if (EMILoot.DEBUG) EMILoot.LOGGER.warn("Entity predicate empty in table: "  + LootTableParser.currentTable);
         //    return LText.empty();
         //}
 
         //entity type check
-        Optional<EntityTypePredicate> typePredicate = predicate.type();
+        Optional<EntityTypePredicate> typePredicate = predicate.entityType();
         if (typePredicate.isPresent()) {
            return EntityTypePredicateParser.parseEntityTypePredicate(typePredicate.get());
         }
 
         //distance check
-        Optional<DistancePredicate> distancePredicate = predicate.distance();
+        Optional<DistancePredicate> distancePredicate = predicate.distanceToPlayer();
         if (distancePredicate.isPresent()){
             return DistancePredicateParser.parseDistancePredicate(distancePredicate.get());
         }
@@ -45,7 +44,7 @@ public class EntityPredicateParser {
         }
 
         //effects check
-        Optional<EntityEffectPredicate> entityEffectPredicate = predicate.effects();
+        Optional<MobEffectsPredicate> entityEffectPredicate = predicate.effects();
         if (entityEffectPredicate.isPresent()){
             return EntityEffectPredicateParser.parseEntityEffectPredicate(entityEffectPredicate.get());
         }
@@ -69,7 +68,7 @@ public class EntityPredicateParser {
         }
 
         //Type Specific checks
-        Optional<EntitySubPredicate> typeSpecificPredicate = predicate.typeSpecific();
+        Optional<EntitySubPredicate> typeSpecificPredicate = predicate.subPredicate();
         if (typeSpecificPredicate.isPresent()){
             return TypeSpecificPredicateParser.parseTypeSpecificPredicate(typeSpecificPredicate.get());
         }
